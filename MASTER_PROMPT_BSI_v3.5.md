@@ -58,6 +58,31 @@ The Execution Architecture MUST NOT be used to introduce new BSI criteria, alter
 
 ---
 
+## 2A. Authoritative Reference Map
+
+The following documents are the authoritative reference sources for the corresponding BSI components:
+
+- [CORE-BEHMANESH v1.0](CORE-BEHMANESH/v1.0/CORE_BEHMANESH_v1.0.md)
+- [BIO v1.0](Ontology/BIO_v1.0.md)
+- [SOP — Intellectual Content Analysis v3.4.2](SOP_Intellectual_Content_Analysis_v3.4.2.md)
+- [BSI v3.5 Execution Architecture](BSI_3.5_Execution_Architecture.md)
+- [EIG — Epistemic Integrity Gap Analyzer v1.0](CORE-BEHMANESH/Shared_Components/EIG/Epistemic_Integrity_Gap_Analyzer_v1.0.md)
+- [ECC — Epistemic Confidence Calibration v2.0](CORE-BEHMANESH/Shared_Components/EIG/Epistemic_Confidence_Calibration_v2.0.md)
+- [Recursive EIG / REIG v1.0](CORE-BEHMANESH/Shared_Components/EIG/Recursive_EIG_v1.0.md)
+- [BSI Calculation Formula — Hybrid v3.x](BSI_Calculation_Formula_Hybrid_v3x.md)
+
+### Source Authority Rule
+
+These links are navigation references to the authoritative repository documents.
+
+The Master Prompt MUST NOT reconstruct, replace, reinterpret, or silently modify definitions contained in these authoritative sources.
+
+Where a specific authoritative document defines a rule more precisely than this Master Prompt, the authoritative document governs.
+
+The Execution Architecture governs execution behavior only and MUST NOT modify the BSI Knowledge Core, ontology, criteria, weights, or scoring logic.
+
+---
+
 ## 3. Execution Architecture
 
 Before beginning the analysis and before declaring it complete, execute the requirements defined in:
