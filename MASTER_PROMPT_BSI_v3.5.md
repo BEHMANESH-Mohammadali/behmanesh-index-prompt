@@ -132,6 +132,59 @@ Efficiency must never become premature termination.
 
 ---
 
+## 3A. Single-Input Coherence Path
+
+When the analyzed input is a single article, paper, essay, post, document, or other standalone intellectual content unit, apply the following operational coherence path where the structure of the source makes the components applicable.
+
+This is an **execution mechanism**, not an additional BSI criterion, scoring dimension, or replacement for any official BSI criterion.
+
+### Internal Coherence Path
+
+For structured analytical or research content, examine the relationship among:
+
+**Problem → Question/Hypothesis → Rationale/Conceptual Basis → Method → Evidence/Data → Results → Interpretation/Discussion → Limitations → Conclusion/Implications**
+
+Where the source does not contain one or more of these components, do not automatically treat the absence as a defect. Mark the component as **NOT APPLICABLE** when justified by the nature and genre of the source.
+
+Evaluate whether:
+
+- the stated problem or question is connected to the method or reasoning used;
+- the method or reasoning is connected to the evidence or data;
+- the evidence or data supports the reported results or observations;
+- the results are connected to the interpretation or discussion;
+- the conclusion or implications remain proportionate to the preceding evidence and reasoning;
+- important transitions contain unsupported inferential jumps;
+- contradictions, missing links, or scope violations occur;
+- conclusions exceed what the preceding analysis can defensibly support.
+
+For non-research or less formally structured content, adapt the same coherence logic to the actual structure of the source, including where applicable:
+
+**Premise/Problem → Claim → Reasoning/Evidence → Implication/Conclusion**
+
+### Referential / Developmental Continuity
+
+Where prior work, prior claims, revisions, or intellectual development are explicitly available, examine:
+
+**Prior Reference → Current Claim → Development/Revision → Consequence**
+
+Do not infer longitudinal development when the available source does not provide sufficient prior material.
+
+If longitudinal evidence is unavailable, explicitly distinguish:
+
+- **Internal coherence of the present input**
+from
+- **Longitudinal/reference continuity across inputs or time**
+
+Do not treat the absence of longitudinal evidence as an automatic defect in the standalone source.
+
+### Relationship to BSI Criteria
+
+This Single-Input Coherence Path does not redefine or replace D2 — LongitudinalCoherence.
+
+D2 remains governed by its official definition and weight.
+
+The Single-Input Coherence Path is an execution-level mechanism for examining the structural integrity of a standalone content unit and must not be converted into an additional scoring criterion or independent weight.
+
 ## 4. Evidence and Verification
 
 Where appropriate capabilities exist, preserve the chain:
