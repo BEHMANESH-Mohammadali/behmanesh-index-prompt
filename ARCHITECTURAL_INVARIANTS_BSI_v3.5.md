@@ -336,9 +336,9 @@ User feedback may still identify genuine omissions or errors, but it must not be
 
 ---
 
-## 11. Separation of Concerns
+## 11. Four-Layer Separation of Concerns
 
-BSI 3.5 maintains three distinct layers:
+BSI 3.5 maintains four distinct architectural layers.
 
 ### Layer A — BSI Knowledge Core
 
@@ -348,28 +348,42 @@ Defines:
 - what BSI analyzes
 - its epistemic structure
 - its analytical layers
-- its criteria
+- its formal criteria
 - its scoring logic
 
 ### Layer B — Execution Architecture
 
 Defines:
 
-- when analysis is sufficiently investigated
-- how effort is calibrated
+- how sufficient analytical effort is determined
+- how evidence is controlled
 - when retrieval should escalate
 - when counterevidence should be checked
 - when verification is required
 - when completion is justified
+- how detected weaknesses are corrected
 
-### Layer C — Output Architecture
+### Layer C — Analytical Output Contract
 
 Defines:
 
-- how findings are organized
+- how substantive findings are organized
 - how uncertainty is communicated
-- how compliance is demonstrated
-- how the final analysis is presented
+- which substantive effects of execution must enter the analytical result
+- how material limitations affecting result reliability are represented
+- how the completed analysis is presented
+
+Layer C is part of the BSI delivery architecture, but changes to Layer C must be explicitly versioned and documented.
+
+### Layer D — Audit / Machine Trace
+
+Defines:
+
+- machine-observable execution state
+- deterministic audit information
+- the distinction between claimed, observed, and independently validated execution state
+
+Layer D is not a second analytical report.
 
 No layer may silently substitute for another.
 
