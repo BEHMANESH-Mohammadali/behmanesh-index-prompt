@@ -35,15 +35,18 @@ The final BSI analysis MUST contain the following substantive sequence:
 2. Executive Summary
 3. Seven Main BSI Criteria (D1–D7)
 4. CreativeValueAdd
-5. Deep Structural Analysis
-6. EIG Analysis
-7. ECC Analysis
-8. Draft Analysis
-9. REIG — Recursive EIG
-10. Final Synthesis
-11. Final BSI Score
+5. Deep Structural Analysis (Manifest / Latent / Meta)
+6. Final Synthesis
+7. D2 Temporal Evidence Presentation (where D2 is applicable)
+8. Final BSI Score
 
 The sequence above is the authoritative presentation order specified by BSI v3.5.
+
+Uncertainty (§15) and Material Limitations (§16) are not a fixed step in this sequence; they are cross-cutting requirements that MUST be represented wherever, within the sequence above, they materially affect interpretation, confidence, or reliability.
+
+EIG, ECC, and REIG are not independent items in this sequence either. Per the Execution-to-Output Firewall (DHR-0007), their substantive effects are integrated into the items above — primarily into Deep Structural Analysis and Final Synthesis — rather than presented as standalone procedural reports. §8–§11 below specify what each mechanism contributes to those items and what remains Layer-D-only.
+
+Draft Analysis is an internal Layer B working object, not a Layer C output component, and never appears as a numbered item in this sequence (see §10).
 
 ---
 
@@ -153,11 +156,17 @@ Hypotheses and interpretations MUST NOT be presented as established facts.
 
 ---
 
-## 8. EIG Analysis
+## 8. EIG — Substantive Integration
 
-The analysis MUST perform EIG according to the formal EIG architecture.
+EIG MUST be performed according to the formal EIG architecture (Layer A/B).
 
-The output MUST distinguish between:
+Its substantive output enters Layer C only as integrated findings, not as a standalone "EIG Analysis" report:
+
+- material epistemic gaps enter the relevant D-criterion justification (§5) and/or the Deep Structural Analysis (§7);
+- gaps materially affecting confidence enter Uncertainty and Material Limitations;
+- gaps materially affecting the final score enter Final BSI Score (§14) as a disclosed input, not as an invented narrative.
+
+Wherever EIG's findings are reflected, the analysis MUST distinguish:
 
 - what is supported;
 - what is inferred;
@@ -167,15 +176,15 @@ The output MUST distinguish between:
 
 EIG values or conclusions MUST NOT be invented merely to complete an output template.
 
+Raw EIG gap values, the applicable gap weights, and the resulting EIG_avg / EIG_penalty are score-traceability inputs. They belong to Layer D (Audit / Machine Trace), not to a Layer C narrative section. Layer C may state that an EIG-driven adjustment occurred and its substantive consequence, without reproducing the full gap-by-gap computation as reader-facing content.
+
 ---
 
-## 9. ECC Analysis
+## 9. ECC — Substantive Integration
 
-The analysis MUST perform ECC v2.0 according to the official ECC architecture.
+ECC v2.0 MUST be performed according to the official ECC architecture. ECC is a calibration subsystem of EIG and does not replace EIG.
 
-ECC is a calibration subsystem of EIG and does not replace EIG.
-
-The analysis MUST distinguish:
+Its substantive output enters Layer C through claim-level calibration, not as a standalone "ECC Analysis" report. The analysis MUST distinguish:
 
 - FACT;
 - INFERENCE;
@@ -186,52 +195,44 @@ Where these distinctions cannot be adequately established, the required state is
 
 **LOW CONFIDENCE ASSESSMENT**
 
-Where applicable, report:
+ECC's effect on specific claims MUST be reflected through this labeling and through Uncertainty, wherever it materially changes how a finding should be read.
 
-- CC-C;
-- SC-E;
-- SC-M;
-- SC-L;
-- EG;
-- MG;
-- LG;
-- ECC_Total.
-
-ECC values MUST NOT be invented when required evidence is unavailable.
+The numeric calibration layers (ECC-C, ECC-E, ECC-M, ECC-L) and ECC_Total are Layer D audit values, used for score traceability. They are not required Layer C reader-facing content and MUST NOT be invented when required evidence is unavailable.
 
 ---
 
-## 10. Draft Analysis
+## 10. Draft Analysis — Internal Working Object
 
-Before REIG, the analysis MUST construct the Draft Analysis containing the substantive analytical output produced so far.
+The Draft Analysis is a Layer B execution artifact: the working representation that REIG audits before Final Synthesis is produced.
 
-The Draft Analysis is the object audited by REIG.
+The Draft Analysis is NOT the source article or target text, and it is NOT a Layer C output component. It MUST NOT appear as a numbered section, header, or reader-facing block in the final analysis.
 
-The Draft Analysis is NOT the source article or target text.
+Where auditability requires recording that a draft stage occurred, that record (e.g. a state marker) belongs to Layer D, not Layer C.
 
 ---
 
-## 11. REIG
+## 11. REIG — Correction Integration
 
-REIG MUST be applied to the Draft Analysis.
+REIG MUST be applied to the Draft Analysis as a repair mechanism:
 
-The output MUST report, for each applicable official REIG dimension:
+`Draft Analysis → REIG → Correction → Re-analysis → Final Validation`
 
-- dimension;
-- score;
-- finding;
-- supporting evidence or reasoning;
-- required correction where a material violation exists.
+REIG's substantive output enters Layer C only as corrected analytical content:
 
-The five official REIG dimensions are:
+- where REIG identifies a material weakness, the correction MUST be reflected directly in the relevant D-criterion justification (§5), the Deep Structural Analysis (§7), or Final Synthesis (§12) — not reported as a separate audit finding;
+- where REIG finds no material issue, no "REIG Report" section is produced.
+
+The five official REIG dimensions remain:
 
 1. Evidence Consistency Check — ERG
 2. Method Consistency Check — MRG
 3. Confidence Consistency Check — CRG
 4. Assumption Consistency Check — ARG
-5. FAIRNESS Consistency Check — FRG
+5. Fairness Consistency Check — FRG
 
-The four legacy audit dimensions may be used as additional diagnostics but MUST NOT replace the five official dimensions.
+Per-dimension REIG scores and findings, and the four legacy audit dimensions where used as additional diagnostics, are Layer D audit-trace content. They MUST NOT replace the five official dimensions at the Layer D level, and they MUST NOT be surfaced as a standalone Layer C report.
+
+If REIG required correction, Final Synthesis (§12) MUST disclose the material consequence in substantive terms (e.g. "an inference regarding X was narrowed because the supporting evidence did not establish generalization") without narrating the audit procedure itself.
 
 ---
 
@@ -247,7 +248,8 @@ It MUST include:
 - improvement recommendations;
 - material uncertainty;
 - evidence limitations;
-- analytical limitations.
+- analytical limitations;
+- where REIG required correction (§11), the corrected conclusion and its substantive basis.
 
 Recommendations MUST remain evidence-proportional and MUST NOT be presented as established facts when they are inferential.
 
@@ -278,7 +280,7 @@ This presentation requirement does not introduce a new D2 score, weight, criteri
 
 ---
 
-## 13. Final BSI Score
+## 14. Final BSI Score
 
 The final BSI score MUST be calculated using the official BSI scoring logic and official BIO v1.0 weights.
 
@@ -290,7 +292,7 @@ If a required scoring input cannot be defensibly established, the limitation MUS
 
 ---
 
-## 14. Uncertainty
+## 15. Uncertainty
 
 Uncertainty MUST be explicitly represented wherever it materially affects interpretation, confidence, scoring, or conclusion.
 
@@ -300,7 +302,7 @@ Unsupported certainty MUST NOT be introduced merely to complete the output struc
 
 ---
 
-## 15. Material Limitations
+## 16. Material Limitations
 
 The completed analysis MUST disclose material:
 
@@ -313,7 +315,7 @@ Absence of a limitation MUST NOT be inferred merely because a corresponding fiel
 
 ---
 
-## 16. Substantive Effects of Execution
+## 17. Substantive Effects of Execution
 
 Execution requirements belong primarily to Layer B.
 
@@ -334,7 +336,7 @@ It MUST NOT be converted into procedural verbosity, redundant narration, or unsu
 
 ---
 
-## 17. Boundary with Layer D
+## 18. Boundary with Layer D
 
 Layer C MUST NOT become a machine-execution trace.
 
@@ -348,27 +350,29 @@ A rich execution-status report MUST NOT substitute for the mandatory BSI analyti
 
 ---
 
-## 18. Analytical Output Completeness
+## 19. Analytical Output Completeness
 
 Completion of the analytical output requires the presence and internal coherence of all mandatory substantive components required by BSI v3.5, including:
 
 - all seven BSI criteria;
 - CreativeValueAdd and all three official subcriteria;
 - Manifest / Latent / Meta analysis;
-- EIG;
-- ECC;
-- Draft Analysis;
-- REIG audit of the Draft Analysis;
+- the substantive integration of EIG findings (§8);
+- the substantive integration of ECC calibration (§9);
+- the substantive integration of REIG corrections, where applicable (§11);
 - Final Synthesis;
+- D2 temporal evidence presentation, where D2 is applicable;
 - uncertainty and limitations.
 
-Execution completeness alone does not authorize analytical completion.
+Completion does NOT require, and MUST NOT be demonstrated by, standalone EIG, ECC, Draft, or REIG report sections.
+
+Execution completeness alone does not authorize analytical completion. The converse also holds: the presence of separate procedural report sections does not substitute for substantive analytical completeness.
 
 If a mandatory analytical component is missing, the analysis MUST NOT be declared complete.
 
 ---
 
-## 19. Non-Modification Rule
+## 20. Non-Modification Rule
 
 This Layer C specification MUST NOT:
 
@@ -386,7 +390,7 @@ Any future change to Layer C MUST be explicitly versioned and documented.
 
 ---
 
-## 20. Canonical Source Basis
+## 21. Canonical Source Basis
 
 This specification is derived from the existing BSI v3.5 authoritative materials, including:
 
