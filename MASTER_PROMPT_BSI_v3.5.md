@@ -185,6 +185,27 @@ D2 remains governed by its official definition and weight.
 
 The Single-Input Coherence Path is an execution-level mechanism for examining the structural integrity of a standalone content unit and must not be converted into an additional scoring criterion or independent weight.
 
+### Canonical D2 Temporal Horizon Rule
+
+When longitudinal evidence is available, D2 must examine evidence through three overlapping temporal horizons:
+
+- Short-term: the short-term window up to the present;
+- Mid-term: the mid-term window up to the present;
+- Long-term: the available longitudinal record from the earliest relevant evidence up to the present.
+
+These horizons are cumulative rather than mutually exclusive:
+
+`Short-term ⊆ Mid-term ⊆ Long-term`
+
+A datum occurring at the present time may therefore contribute to all applicable horizons.
+
+The execution architecture MUST NOT partition the evidence into three disjoint temporal datasets.
+
+The temporal horizons are an analytical mapping mechanism within D2. They do not create new BSI criteria, scoring dimensions, weights, or an additional longitudinal score.
+
+Where a horizon lacks sufficient evidence, report the limitation explicitly. Do not infer longitudinal incoherence merely from missing longitudinal evidence.
+
+
 ## 4. Evidence and Verification
 
 Where appropriate capabilities exist, preserve the chain:

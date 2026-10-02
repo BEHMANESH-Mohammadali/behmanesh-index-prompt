@@ -105,7 +105,16 @@ D2 = 0.40 × Trajectory_Stability
 | Stable_Nodes_Consistency | 0.20 | انسجام گره‌های مفهومی پایدار |
 | Theme_Evolution | 0.10 | تکامل آگاهانه تم‌ها (Evolution نه Rupture) |
 
-**الزام BIO:** وزن Longitudinal در محاسبه کلی حداقل ۶۰٪ باید باشد.
+**DEPRECATED — Legacy Longitudinal Weight Rule**
+
+قاعدهٔ «وزن Longitudinal حداقل ۶۰٪» متعلق به معماری‌های پیش از BIO v1.0 است و در معماری canonical فعلی BSI اعمال نمی‌شود.
+
+این قاعده نباید به‌عنوان وزن اضافی، override، constraint یا لایهٔ مستقل بر محاسبهٔ D2 یا امتیاز کلی BSI اعمال شود.
+
+مرجع فعلی:
+- D2 LongitudinalCoherence = 0.18
+- تفکیک داخلی D2 طبق operationalization رسمی این سند باقی می‌ماند.
+- نقش longitudinal evidence در خود سازهٔ D2 حفظ می‌شود، نه به‌صورت یک وزن مستقل ۶۰٪.
 **تفکیک اجباری EIG:** Evolution (آگاهانه) از Rupture (ناآگاهانه).
 
 ---
