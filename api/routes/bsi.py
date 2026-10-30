@@ -40,7 +40,14 @@ def score(payload: dict):
     details = result.get("details", {})
 
     if full_pipeline:
-        return run_pipeline(text, details)
+        pipeline_result = run_pipeline(text, details)
+        pipeline_result["framework_version"] = FRAMEWORK_VERSION
+        pipeline_result["engine_version"] = LEGACY_ENGINE_VERSION
+        pipeline_result["engine_status"] = ENGINE_STATUS
+        pipeline_result["version_warning"] = (
+            "This pipeline uses the legacy v3.4.1 engine and is not a BSI v3.5 execution."
+        )
+        return pipeline_result
 
     metrics = details.get("metrics", {})
     layers = details.get("bsi_layers", {})
