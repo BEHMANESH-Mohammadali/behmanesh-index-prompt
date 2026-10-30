@@ -1,144 +1,79 @@
-Behmanesh Structural Index (BSI)
+# Behmanesh Structural Index (BSI)
 
-شاخص ساختاری بهمنش
+**شاخص ساختاری بهمنش**
 
-Version: 3.4.2
+**Canonical framework and master prompt: BSI v3.5**
 
 Developed by Mohammadali Behmanesh (محمدعلی بهمنش).
 
-"Version" (https://img.shields.io/badge/version-3.4.2-blue.svg)
-"License" (https://img.shields.io/badge/license-MIT-green.svg)
+BSI is a layered, interdisciplinary framework for structural analysis of intellectual content. It examines the organization and development of ideas, conceptual relationships, mechanisms, assumptions, explicit and latent structures, analytical coherence, and structural depth.
 
-What is BSI?
+## Canonical version
 
-BSI — Behmanesh Structural Index / شاخص ساختاری بهمنش is a layered, interdisciplinary framework for structural analysis of intellectual content.
+The canonical framework prompt is **[MASTER_PROMPT_BSI_v3.5.md](MASTER_PROMPT_BSI_v3.5.md)**.
 
-Its purpose is to move beyond surface-level description and examine the organization and development of ideas, including:
+The v3.5 definition is governed by its authoritative references, including:
 
-- patterns and themes
-- conceptual relationships
-- intellectual development
-- worldview
-- underlying mechanisms
-- explicit and latent structures
-- analytical coherence
-- structural depth
+- [Architectural Invariants](ARCHITECTURAL_INVARIANTS_BSI_v3.5.md)
+- [Execution Architecture](BSI_3.5_Execution_Architecture.md)
+- [Canonical Specification Matrix](docs/specification/CANONICAL_SPECIFICATION_MATRIX_v3.5.md)
+- [Analytical Output Contract — Layer C](docs/specification/ANALYTICAL_OUTPUT_CONTRACT_LAYERC_v3.5.md)
+- [BIO v1.0](Ontology/BIO_v1.0.md)
+- [CORE-BEHMANESH v1.0](CORE-BEHMANESH/v1.0/CORE_BEHMANESH_v1.0.md)
 
-BSI is designed as an analytical framework rather than as a simple textual scoring system.
+The framework workflow remains:
 
-Core orientation
+`CORE_BEHMANESH → BSI → EIG → ECC → REIG → Final Assessment`
 
-BSI approaches intellectual content through layered analysis.
+## Prompt package endpoint
 
-The framework is concerned not only with what a text says, but also with how its concepts, mechanisms, assumptions, relationships, and development form an underlying intellectual structure.
+The API exposes the canonical, version-pinned prompt package at:
 
-Its broader conceptual environment includes ideas such as:
+`GET /bsi/prompt`
 
-- Mechanistic Realism
-- Graph of Thoughts
-- layered analysis
-- temporal triangulation
-- interdisciplinary structural reasoning
+The package includes the complete master prompt, required authoritative reference documents, and SHA-256 digests. It is intended for a downstream LLM generator to consume as its system/developer instruction package.
 
-These concepts are part of the broader intellectual context of the project and should not be treated as interchangeable names for BSI itself.
+The loader fails closed if a required reference is missing. It does not itself call an LLM or calculate BSI scores.
 
-Current framework architecture
+## Runtime status — important
 
-The current BSI workflow is organized around:
+**The canonical prompt package is v3.5. The existing deterministic scoring engine and legacy pipeline are not yet a faithful implementation of BSI v3.5.**
 
-CORE_BEHMANESH
-      ↓
-BSI
-      ↓
-EIG
-      ↓
-ECC
-      ↓
-REIG
-      ↓
-Final Assessment
+Existing scoring endpoints continue to use legacy v3.4.x logic. They must not be represented as v3.5 scoring. The API health/version metadata explicitly identifies this limitation. Full v3.5 execution requires a downstream LLM generator integration and a separately validated implementation of any computational scoring components whose semantics are fully specified.
 
-The framework is implemented through versioned prompt and specification files.
+In particular, unresolved semantics documented in the Canonical Specification Matrix must not be filled with invented weights, formulas, or substitute algorithms.
 
-The repository should be treated as the authoritative location for the corresponding BSI prompt definitions and framework documents.
+## Versioning and archives
 
-Current version
+Older prompt/framework artifacts are retained under [Archive](Archive/) for provenance. They are not the current canonical prompt.
 
-BSI v3.4.2
+The SOP v3.4.2 remains a referenced baseline document where explicitly cited by the v3.5 specification; its presence does not make v3.4.2 the current framework version.
 
-The current master prompt is:
+## Reproducibility
 
-MASTER_PROMPT_BSI_v3.4.2.md
+For every generated analysis, record:
 
-Versioned files are retained so that benchmark runs can identify exactly which framework definition was used.
+- framework and master prompt version;
+- prompt-package SHA-256;
+- source text and source provenance;
+- model/provider and generation settings;
+- date of execution;
+- any runtime or reference limitations.
 
-Benchmark integration
+Do not mix outputs from different framework versions without explicit version identification.
 
-BSI is currently integrated end-to-end with the separate benchmark project:
+## Related repositories
 
-"BEHMANESH-Mohammadali/bsi-benchmark"
+- Benchmark: [bsi-benchmark](https://github.com/BEHMANESH-Mohammadali/bsi-benchmark)
+- Benchmark results: [bsi-benchmark-results-bsi](https://github.com/BEHMANESH-Mohammadali/bsi-benchmark-results-bsi)
 
-The corresponding registered benchmark evidence is maintained in:
-
-"BEHMANESH-Mohammadali/bsi-benchmark-results-bsi"
-
-The benchmark compares BSI-guided analysis with RAW/default analysis on the same source material.
-
-The benchmark is intended to evaluate analytical realization and value added rather than simply measuring the amount of generated text.
-
-Reproducibility
-
-For reproducible use, record:
-
-- BSI version
-- master prompt version
-- source text
-- model
-- relevant generation settings
-- date of execution
-- benchmark configuration, when applicable
-
-Changing the framework definition should be treated as a versioned change rather than silently mixing results across versions.
-
-Repository contents
-
-The repository contains the BSI framework definitions, prompts, supporting specifications, and versioned research material.
-
-The benchmark source code and benchmark results are intentionally maintained in separate repositories.
-
-Related repositories
-
-Benchmark
-
-"BEHMANESH-Mohammadali/bsi-benchmark"
-
-Reproducible infrastructure for comparing RAW and BSI-guided analytical outputs.
-
-Benchmark results
-
-"BEHMANESH-Mohammadali/bsi-benchmark-results-bsi"
-
-Registered benchmark evidence, case studies, aggregate reports, and provenance.
-
-Canonical author profile
-
-"BEHMANESH-Mohammadali/BEHMANESH-Mohammadali"
-
-Canonical GitHub identity point for the project.
-
-Author
+## Author
 
 Mohammadali Behmanesh / محمدعلی بهمنش
 
-GitHub: @BEHMANESH-Mohammadali
+- GitHub: [@BEHMANESH-Mohammadali](https://github.com/BEHMANESH-Mohammadali)
+- X: [@behmanesham](https://x.com/behmanesham)
 
-X: @behmanesham
-
-Primary work:
-
-Behmanesh Structural Index (BSI)
-شاخص ساختاری بهمنش
-
-License
+## License
 
 MIT
