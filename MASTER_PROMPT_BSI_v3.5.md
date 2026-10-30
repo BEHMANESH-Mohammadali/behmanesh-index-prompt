@@ -3,7 +3,7 @@
 **Version:** 3.5  
 **Baseline:** BSI v3.4.2  
 **Execution Architecture:** BSI 3.5 — Execution Architecture  
-**Status:** Development Release  
+**Status:** Canonical Prompt Candidate — pending merge to the default branch  
 **Author:** Mohammadali Behmanesh (@behmanesham)
 
 ---
