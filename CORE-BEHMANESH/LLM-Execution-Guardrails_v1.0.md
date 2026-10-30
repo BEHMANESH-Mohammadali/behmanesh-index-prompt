@@ -2,8 +2,8 @@
 
 **راهنمای اجرای ایمن، دقیق و پایدار شاخص بهمنش توسط مدل‌های زبانی**
 
-**نسخه:** 1.0  
-**تاریخ:** ۳ ژوئن ۲۰۲۶  
+**نسخه:** 1.0
+**تاریخ:** ۳ ژوئن ۲۰۲۶
 **سازگار با:** CORE_BEHMANESH v1.0 + BIO v1.0 + Behmanesh Index v3.4
 
 ---
@@ -16,19 +16,23 @@
 
 ### ۱. اصول اساسی Guardrails (غیرقابل نقض)
 
-1. **Full Repository Awareness**  
+1. **Full Repository Awareness**
    مدل باید قبل از هر تحلیل، تمام فایل‌های کلیدی را خوانده باشد (README, SOP, CORE-BEHMANESH v1.0, BIO v1.0, Methodology).
 
-2. **Strict Ontology Adherence**  
+2. **Strict Ontology Adherence**
    تمام خروجی‌ها باید مطابق ساختار **BIO v1.0** باشند.
 
-3. **Claim Classification Discipline**  
+3. **Claim Classification Discipline**
    استفاده اجباری از برچسب‌های `[FACT]`, `[INFERENCE]`, `[HYPOTHESIS]`, `[SPECULATION]`.
 
-4. **Longitudinal Priority**  
-   وزن Longitudinal حداقل ۶۰٪ باید رعایت شود.
+4. **Longitudinal Priority — DEPRECATED**
+   **Deprecated:** The former minimum-60% longitudinal weighting rule is no longer part of the canonical BSI scoring architecture.
 
-5. **Anti-Drift Protocol**  
+   It MUST NOT be used as an additional weighting layer, override, or constraint on D2 or the overall BSI score.
+
+   Longitudinal evidence remains intrinsic to D2 and must be evaluated according to the current canonical D2 construct and subcriteria.
+
+5. **Anti-Drift Protocol**
    هرگاه احتمال Manifest Bias یا Drift تشخیص داده شد، مدل موظف به گزارش صریح و اصلاح است.
 
 ---

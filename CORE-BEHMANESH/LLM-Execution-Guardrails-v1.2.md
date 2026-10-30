@@ -70,9 +70,12 @@ Core Claim: [یک جمله — بدون بند]
 
 ---
 
-### Rule #4 — Longitudinal Priority
-وزن Longitudinal حداقل ۶۰٪ باید رعایت شود.
-فعالیت کوتاه‌مدت هرگز نباید بیش از ۴۰٪ تأثیر داشته باشد.
+### Rule #4 — Longitudinal Priority — DEPRECATED
+**Deprecated:** The former minimum-60% longitudinal weighting rule is no longer part of the canonical BSI scoring architecture.
+
+It MUST NOT be used as an additional weighting layer, override, or constraint on D2 or the overall BSI score.
+
+Longitudinal evidence remains intrinsic to D2 and must be evaluated according to the current canonical D2 construct and subcriteria.
 
 ---
 

@@ -118,10 +118,11 @@ EIG Score و الگوی غالب، جهان‌بینی، خودآگاهی،
 
 ### ۶. مقایسه زمانی / Temporal Comparison
 
-- بلندمدت (۶۰٪ وزن)
-- متوسط‌مدت (۲۵٪ وزن)
-- کوتاه‌مدت (۱۵٪ وزن)
+- بلندمدت — Long-term
+- متوسط‌مدت — Mid-term
+- کوتاه‌مدت — Short-term
 
+> **DEPRECATED:** The former 60%/25%/15% temporal weighting scheme is not part of the canonical BSI scoring architecture. These horizons are analytical views over the evidence universe and MUST NOT be treated as independent weighting layers or mutually exclusive partitions.
 ---
 
 ### ۷. Uncertainty Report
@@ -152,7 +153,7 @@ EIG Score و الگوی غالب، جهان‌بینی، خودآگاهی،
 - [ ] لایه‌برداری سه‌گانه کامل است
 - [ ] Assumption Excavation Protocol اجرا شد (سطح ۲ و ۳)
 - [ ] EIG Module اجرا شد (سطح ۲ و ۳)
-- [ ] وزن زمانی رعایت شده (حداقل ۶۰٪ بلندمدت)
+- [ ] ~~وزن زمانی رعایت شده (حداقل ۶۰٪ بلندمدت)~~ **DEPRECATED — legacy 60% rule; do not apply to current BSI scoring**
 - [ ] مثال‌های مستقیم آورده شده
 - [ ] رویکرد واقع‌گرایانه-مکانیسمی حفظ شده
 - [ ] برچسب‌گذاری FACT/INFERENCE/HYPOTHESIS/SPECULATION کامل است

@@ -46,7 +46,7 @@ CORE_BEHMANESH v1.0 یک **پروتکل تحلیلی ساخت‌یافته**، *
 - Conceptual Importance
 - Evidence Density
 - Contradiction Intensity
-- Longitudinal Weight (حداقل ۶۰٪)
+- Longitudinal Weight — DEPRECATED (former minimum 60% rule; not part of canonical BSI scoring)
 
 ---
 
@@ -80,7 +80,7 @@ CORE_BEHMANESH v1.0 یک **پروتکل تحلیلی ساخت‌یافته**، *
 - Fallacy & Bias Detection (Confirmation Bias, Anchoring, Motivated Reasoning و غیره)
 - Narrative & Framing Analysis
 - Mechanistic Realism Assessment
-- Longitudinal Pattern Recognition (وزن حداقل ۶۰٪)
+- Longitudinal Pattern Recognition — DEPRECATED (former minimum 60% rule; not part of canonical BSI scoring)
 
 ---
 
