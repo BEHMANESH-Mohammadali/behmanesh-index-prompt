@@ -5,18 +5,25 @@ from datetime import datetime
 
 router = APIRouter()
 
-BSI_VERSION = "3.4.2"
-ENGINE_VERSION = "bsi-core-1.0"
+# The prompt framework is canonical v3.5, but these score routes still invoke
+# the legacy v3.4.1 deterministic engine. Keep the distinction explicit.
+FRAMEWORK_VERSION = "3.5"
+LEGACY_ENGINE_VERSION = "3.4.1"
+ENGINE_STATUS = "LEGACY_NOT_V3_5"
 
 
 @router.get("/version")
 def version():
     return {
-        "bsi_version": BSI_VERSION,
-        "engine": ENGINE_VERSION,
+        "framework_version": FRAMEWORK_VERSION,
+        "canonical_prompt_version": FRAMEWORK_VERSION,
+        "engine_version": LEGACY_ENGINE_VERSION,
+        "engine_status": ENGINE_STATUS,
+        "v3_5_prompt_package": "/bsi/prompt",
+        "scoring_endpoints_are_v3_5": False,
         "pipeline_stages": ["BSI", "EIG", "ECC", "DRAFT", "REIG", "FINAL"],
-        "api_version": "1.2.0",
-        "endpoints": ["/bsi/score", "/bsi/analyze", "/bsi/compare", "/bsi/version"]
+        "api_version": "1.3.0",
+        "endpoints": ["/bsi/score", "/bsi/analyze", "/bsi/compare", "/bsi/version", "/bsi/prompt"]
     }
 
 
@@ -39,11 +46,14 @@ def score(payload: dict):
     layers = details.get("bsi_layers", {})
 
     response = {
-        "version": BSI_VERSION,
+        "framework_version": FRAMEWORK_VERSION,
+        "engine_version": LEGACY_ENGINE_VERSION,
+        "engine_status": ENGINE_STATUS,
         "timestamp": datetime.utcnow().isoformat(),
         "bsi_score": result["bsi"],
         "eig_score": result["eig"],
-        "interpretation": result["label"]
+        "interpretation": result["label"],
+        "version_warning": "Scores are produced by the legacy v3.4.1 engine, not a validated BSI v3.5 runtime."
     }
 
     if detail:
@@ -69,7 +79,12 @@ def analyze(payload: dict):
         return {"error": {"code": "TEXT_TOO_SHORT", "message": "Minimum length is 10"}}
     result = compute_bsi(text)
     details = result.get("details", {})
-    return run_pipeline(text, details)
+    response = run_pipeline(text, details)
+    response["framework_version"] = FRAMEWORK_VERSION
+    response["engine_version"] = LEGACY_ENGINE_VERSION
+    response["engine_status"] = ENGINE_STATUS
+    response["version_warning"] = "This analysis uses the legacy v3.4.1 engine and is not a BSI v3.5 execution."
+    return response
 
 
 @router.post("/compare")
@@ -99,7 +114,10 @@ def compare(payload: dict):
         margin = 0.0
 
     return {
-        "version": BSI_VERSION,
+        "framework_version": FRAMEWORK_VERSION,
+        "engine_version": LEGACY_ENGINE_VERSION,
+        "engine_status": ENGINE_STATUS,
+        "version_warning": "Comparison uses the legacy v3.4.1 engine, not a validated BSI v3.5 runtime.",
         "timestamp": datetime.utcnow().isoformat(),
         "text_a": {
             "bsi_score": bsi_a,
