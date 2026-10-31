@@ -85,9 +85,7 @@ The Execution Architecture governs execution behavior only and MUST NOT modify t
 
 ## 3. Execution Architecture
 
-Before beginning the analysis and before declaring it complete, execute the requirements defined in:
-
-`BSI_3.5_Execution_Architecture.md`
+Before beginning the analysis and before declaring it complete, execute the requirements of the **Embedded Execution Architecture** reproduced in Section 16B below. The repository file `BSI_3.5_Execution_Architecture.md` is the maintenance source, not a runtime dependency. Do not require repository access or a separate file when this complete Master Prompt is supplied.
 
 The execution lifecycle is:
 
@@ -244,6 +242,8 @@ A rich execution-status report is not a substitute for the mandatory BSI analyti
 If a mandatory analytical component is missing, the final state MUST be:
 
 **INCOMPLETE — EXECUTION REQUIREMENT UNMET**
+
+**Prompt-only bounded-completion rule:** lack of browsing, external retrieval, API access, adapters, or independently inspected external sources does not by itself make the structural analysis incomplete. When the supplied target text has been fully analyzed and all applicable analytical components are addressed, the analysis may be marked **COMPLETE — BOUNDED TO SUPPLIED MATERIAL** while clearly marking external verification as NOT PERFORMED / NOT AVAILABLE and leaving source-dependent claims unverified. This exception does not waive any analytical requirement, permit invented evidence, or authorize a numerical score without defensible score inputs. If an applicable analytical step itself cannot be performed, report it as incomplete.
 
 Do not declare the analysis COMPLETE merely because:
 
@@ -731,6 +731,7 @@ This section makes this Master Prompt independently executable. The following re
 5. Numerical BSI scoring is permitted only when every required score and evidence basis can be defensibly established under canonical scoring rules. Otherwise provide criterion-level qualitative assessment and mark the overall numerical score NOT CALCULABLE; never fabricate inputs.
 6. Execution lifecycle and internal working notes remain internal. The final answer reports substantive findings, corrections, uncertainty, and material limitations, not a procedural transcript.
 7. Optional software runtimes may automate, log, or validate these same requirements. They must not redefine BSI, change weights/formulas, or become a prerequisite for direct prompt execution.
+8. **Precedence within this portable artifact:** the Prompt-Only Execution Contract in Section 16A governs how the embedded execution lifecycle is applied when tools are unavailable. It does not alter the analytical Knowledge Core or mandatory substantive output. Repository runtime gates apply only to the optional software execution path.
 
 ## 16B. Embedded Canonical Reference Snapshots
 
