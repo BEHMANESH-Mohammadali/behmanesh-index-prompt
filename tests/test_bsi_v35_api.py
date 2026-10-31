@@ -30,8 +30,6 @@ def test_v35_score_accepts_explicit_assessment():
             "calculation_mode": "linear",
             "content_scope": "single_content",
             "d2_assessment_basis": "internal_coherence_only",
-        "content_scope": "single_content",
-        "d2_assessment_basis": "internal_coherence_only",
             "ecc": {
                 "claimed_confidence": 80,
                 "supported_evidence": 60,
