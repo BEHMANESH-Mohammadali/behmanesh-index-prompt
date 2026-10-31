@@ -64,7 +64,7 @@ This is an operational guarded workflow, not a claim of independent validation o
 
 | Requirement | Previous state | Corrected target | Status |
 |---|---|---|---|
-| Direct execution from one prompt | Master Prompt referenced external repository documents and a separate Execution Architecture file | Embedded normative snapshots and a self-contained Prompt-Only Execution Contract in `MASTER_PROMPT_BSI_v3.5.md` | Implemented in prompt artifact; independent-interface portability test remains pending |
+| Direct execution from one prompt | Master Prompt referenced external repository documents and a separate Execution Architecture file | Embedded normative snapshots (including Execution Architecture, architectural invariants, output contract, specification matrix, CORE_BEHMANESH, BIO, EIG, ECC, REIG, SOP v3.4.2, and hybrid calculation formula) and a self-contained Prompt-Only Execution Contract in `MASTER_PROMPT_BSI_v3.5.md` | Implemented in prompt artifact; independent-interface portability test remains pending |
 | Runtime dependency | `core/prompt_registry.py` labelled execution as `external-llm-required`; API request required configured model roles | Runtime/API/adapters are optional automation paths; direct prompt execution does not invoke them | Registry metadata corrected; runtime remains optional |
 | External verification | Runtime requires inspected source materials for source-level verification | Prompt-only mode distinguishes supplied-text analysis from external verification; absent tools do not fabricate verification or invalidate bounded analysis | Explicitly specified |
 | Numerical scoring | Explicit evidence-backed inputs required by runtime | Prompt-only and runtime both prohibit invented scores; if score inputs/bases cannot be established, numerical total is not calculable | Preserved |
@@ -78,6 +78,6 @@ This change restores the v3.4.2-style portability property: the complete prompt 
 
 - Check the canonical `/20` EIG penalty lock in the prompt.
 - Check that prompt-only execution contract explicitly says API/runtime are not prerequisites.
-- Check that all required normative reference documents are embedded in the prompt.
+- Check that all required normative reference documents are embedded in the prompt, including SOP v3.4.2 and the hybrid calculation formula.
 - Run the existing repository test suite and prompt-package tests.
 - Perform a manual portability test by pasting only the Master Prompt plus a target text into at least one independent LLM interface without repository/API access; record the model/interface and limitations before claiming this test passed.
