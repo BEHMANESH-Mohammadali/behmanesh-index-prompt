@@ -8,8 +8,8 @@ from core.bsi_scoring_v35 import (
     calculate_ecc_gaps,
     calculate_eig,
     calculate_reig,
-    run_v35_scoring,
 )
+from core.bsi_v35_runtime import run_v35_scoring
 
 
 def test_official_weights_sum_to_one():
