@@ -8,6 +8,7 @@ from core.bsi_scoring_v35 import (
     calculate_ecc_gaps,
     calculate_eig,
     calculate_reig,
+    run_v35_scoring,
 )
 
 
@@ -97,3 +98,29 @@ def test_reig_rejects_missing_dimension():
 def test_reig_rejects_out_of_range_values():
     with pytest.raises(ScoringInputError):
         calculate_reig({"ERG": 0, "MRG": 1, "CRG": 2, "ARG": 3, "FRG": 5})
+
+
+
+def test_runtime_integrates_all_scoring_stages():
+    result = run_v35_scoring({
+        "dimension_scores": {f"D{i}": 80 for i in range(1, 8)},
+        "eig_gaps": {"MCG": 2, "CEG": 4, "FCG": 2, "LCG": 6},
+        "lcg_interpretation": "Rupture",
+        "calculation_mode": "linear",
+        "ecc": {
+            "claimed_confidence": 80,
+            "supported_evidence": 60,
+            "supported_method": 70,
+            "supported_conclusion": 50,
+        },
+        "reig": {"ERG": 0, "MRG": 1, "CRG": 2, "ARG": 3, "FRG": 4},
+    })
+    assert result["engine_status"] == "V3_5_SCORING_CONNECTED"
+    assert result["EIG"]["penalty_formula"] == "EIG_avg / 20"
+    assert result["REIG"]["REIG_Total"] == 2
+    assert "ECC_Total" not in result["ECC"]
+
+
+def test_runtime_rejects_missing_assessment_fields():
+    with pytest.raises(ScoringInputError, match="Missing assessment fields"):
+        run_v35_scoring({"dimension_scores": {}})
