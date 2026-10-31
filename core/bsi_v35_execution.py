@@ -132,11 +132,17 @@ def effort_calibration(context: Mapping[str, Any]) -> StageResult:
 def evidence_sufficiency(context: Mapping[str, Any]) -> StageResult:
     text = _text(context)
     has_refs = bool(re.search(r"https?://|doi\s*:", text, re.I))
+    supplied = _task(context).get("source_materials", [])
+    usable = [item for item in supplied if isinstance(item, Mapping)
+              and isinstance(item.get("text"), str) and item.get("text", "").strip()
+              and item.get("source_ref")]
     return StageResult(output={
         "source_references_in_target": has_refs,
-        "evidence_sufficiency": "NOT_YET_ESTABLISHED",
-        "gaps": ["Claims have not yet been linked to independently inspected source material."],
-    })
+        "inspected_source_materials_supplied": len(usable),
+        "evidence_sufficiency": "SOURCE_TEXT_SUPPLIED_PENDING_CLAIM_AUDIT" if usable else "NOT_YET_ESTABLISHED",
+        "gaps": [] if usable else ["Claims have not yet been linked to independently inspected source material."],
+    }, evidence_refs=tuple(str(item["source_ref"]) for item in usable),
+       verification_state="SOURCE_TEXT_SUPPLIED" if usable else "NOT_EXTERNALLY_VERIFIABLE")
 
 
 def evidence_retrieval_or_gap_record(context: Mapping[str, Any]) -> StageResult:
