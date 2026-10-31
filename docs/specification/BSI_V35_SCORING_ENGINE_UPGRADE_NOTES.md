@@ -10,6 +10,8 @@ The existing `core/bsi_engine.py`, pipeline, API wiring, prompt, ontology, and o
 
 ## Preserved semantics
 
+- Single-content D2: evaluate internal coherence only; do not infer longitudinal development or treat absence of longitudinal evidence as a defect. This clarification implements the user's confirmation that the rule was already settled.
+
 - Official BSI dimension weights D1-D7: 0.22, 0.18, 0.18, 0.17, 0.12, 0.08, 0.05.
 - Official EIG gap weights: MCG 0.30, CEG 0.35, FCG 0.15, LCG 0.20.
 - EIG's Evolution/Rupture/Unknown distinction, including documented LCG adjustments (0.50 / 1.00 / 0.75).
@@ -29,7 +31,7 @@ The existing `core/bsi_engine.py`, pipeline, API wiring, prompt, ontology, and o
 
 1. Resolve the authoritative EIG penalty conflict: the user's 2026-10-03 decision says `/20`, while `docs/specification/CANONICAL_SPECIFICATION_MATRIX_v3.5.md` and `BSI_Calculation_Formula_Hybrid_v3x.md` currently say `/10`. Do not silently choose one for production integration.
 2. Resolve ECC aggregation authority by reviewing the complete SOP and architectural invariants alongside ECC v2.0.
-3. Decide how the caller represents unavailable D2 while still honoring the canonical D2 construct and the no-imputation rule. This module intentionally refuses incomplete seven-score input.
+3. Single-content D2 handling is now explicit: assess internal coherence only, do not infer longitudinal trajectory, and do not treat unavailable longitudinal evidence as a defect. The D2 score must still be evidence-backed; no automatic imputation or weight renormalization is performed.
 4. Decide an authoritative nonlinear-selection rule or keep mode explicit at the caller.
 5. Review the new module against the entire canonical output contract, engine/pipeline/API call paths, and existing regression suite before wiring it into production.
 6. Run CI / unit tests in the repository environment and inspect diff, status, and regression results before proposing a merge.
