@@ -96,12 +96,14 @@ def calculate_bsi(
     *,
     calculation_mode: str,
 ) -> dict:
-    """Calculate BSI from seven externally assessed scores (0-100).
+    """Calculate BSI from explicitly supplied, evidence-backed scores.
 
-    No threshold for automatic nonlinear activation is canonically specified.
-    Therefore the caller must explicitly select 'linear' or 'nonlinear'.
-    All seven dimensions, including D2, are required; missing D2 is not
-    imputed, treated as zero, or silently renormalized.
+    For a single-content analysis, D2 is assessed only for internal coherence;
+    no longitudinal trajectory is inferred. The caller must supply the D2
+    assessment under that rule. Missing D2 is not imputed or renormalized.
+
+    The automatic nonlinear activation threshold remains intentionally
+    unresolved. The caller must explicitly select linear or nonlinear mode.
     """
     missing = set(BSI_WEIGHTS) - set(dimension_scores)
     extra = set(dimension_scores) - set(BSI_WEIGHTS)
