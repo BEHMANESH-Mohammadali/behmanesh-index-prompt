@@ -95,54 +95,34 @@ def analyze(payload: dict):
 def compare(payload: dict):
     text_a = payload.get("text_a", "")
     text_b = payload.get("text_b", "")
-
+    assessment_a = payload.get("assessment_a")
+    assessment_b = payload.get("assessment_b")
     if len(text_a) < 10 or len(text_b) < 10:
         return {"error": {"code": "TEXT_TOO_SHORT", "message": "Both texts must be at least 10 chars"}}
-
-    result_a = compute_bsi(text_a)
-    result_b = compute_bsi(text_b)
-
-    bsi_a = result_a["bsi"]
-    bsi_b = result_b["bsi"]
-    eig_a = result_a["eig"]
-    eig_b = result_b["eig"]
-
-    if bsi_a > bsi_b:
-        winner = "text_a"
-        margin = round(bsi_a - bsi_b, 3)
-    elif bsi_b > bsi_a:
-        winner = "text_b"
-        margin = round(bsi_b - bsi_a, 3)
-    else:
-        winner = "tie"
-        margin = 0.0
-
+    if not isinstance(assessment_a, dict) or not isinstance(assessment_b, dict):
+        from fastapi import HTTPException
+        raise HTTPException(status_code=422, detail={
+            "code": "MISSING_V35_ASSESSMENTS",
+            "message": "Provide evidence-backed assessment_a and assessment_b; raw texts are not heuristically scored.",
+        })
+    try:
+        result_a = run_v35_scoring(assessment_a)
+        result_b = run_v35_scoring(assessment_b)
+    except ScoringInputError as exc:
+        from fastapi import HTTPException
+        raise HTTPException(status_code=422, detail={
+            "code": "INVALID_V35_ASSESSMENT", "message": str(exc)
+        }) from exc
+    a = result_a["BSI"]["BSI_score"]
+    b = result_b["BSI"]["BSI_score"]
     return {
         "framework_version": FRAMEWORK_VERSION,
-        "engine_version": LEGACY_ENGINE_VERSION,
+        "engine_version": "3.5.0-explicit-input",
         "engine_status": ENGINE_STATUS,
-        "version_warning": "Comparison uses the legacy v3.4.1 engine, not a validated BSI v3.5 runtime.",
+        "comparison_mode": "DESCRIPTIVE_SIDE_BY_SIDE",
+        "text_a": result_a,
+        "text_b": result_b,
+        "difference": round(a - b, 4),
+        "warning": "Scores are comparable only if assessment methods and evidence standards are equivalent. This endpoint does not rank authors or infer truth from score differences.",
         "timestamp": datetime.utcnow().isoformat(),
-        "text_a": {
-            "bsi_score": bsi_a,
-            "eig_score": eig_a,
-            "interpretation": result_a["label"]
-        },
-        "text_b": {
-            "bsi_score": bsi_b,
-            "eig_score": eig_b,
-            "interpretation": result_b["label"]
-        },
-        "comparison": {
-            "winner": winner,
-            "bsi_margin": margin,
-            "eig_delta": round(abs(eig_a - eig_b), 3),
-            "verdict": (
-                f"text_a از نظر BSI قوی‌تر است (+{margin})"
-                if winner == "text_a" else
-                f"text_b از نظر BSI قوی‌تر است (+{margin})"
-                if winner == "text_b" else
-                "هر دو متن امتیاز یکسانی دارند"
-            )
-        }
     }
