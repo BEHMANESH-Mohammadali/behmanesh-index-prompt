@@ -138,7 +138,7 @@ Total:
 
 with:
 
-`EIG_penalty = EIG_avg / 10`
+`EIG_penalty = EIG_avg / 20`
 
 where `EIG_avg` is the applicable weighted average of EIG gaps on the 0–10 scale.
 
@@ -175,9 +175,7 @@ A single input must not be used to fabricate longitudinal claims.
 
 ### Unresolved implementation detail
 
-The complete canonical handling of D2 when only a single input is available requires explicit specification.
-
-Until resolved, the execution architecture must not invent longitudinal evidence, trajectories, contradictions, or stability claims.
+**RESOLVED by explicit owner decision (2026-10-31):** for a single-content analysis, D2 is assessed using internal coherence only. No longitudinal trajectory, stability, or development claim may be inferred from one input. Missing longitudinal evidence is not itself a defect. This does not change D2's canonical weight (0.18) or redefine its subcriteria; it defines the single-input evidence-availability path.
 
 EIG's Longitudinal Consistency Gap remains an interpretive lens and must not be converted into causal claims.
 
@@ -189,7 +187,9 @@ EIG's Longitudinal Consistency Gap remains an interpretive lens and must not be 
 
 The BSI penalty mechanism uses:
 
-`EIG_penalty = EIG_avg / 10`
+`EIG_penalty = EIG_avg / 20`
+
+This is the explicit owner-approved calibration decision confirmed on 2026-10-31. It supersedes the former `/10` penalty mapping for implementation. The EIG gap weights and 0–10 gap scale remain unchanged; maximum penalty is 0.5.
 
 where `EIG_avg` is a weighted average of applicable EIG gaps on the 0–10 scale.
 
@@ -352,7 +352,7 @@ The following items remain unresolved and must be explicitly specified before im
 
 ### U1 — Nonlinear BSI activation threshold
 
-The exact authoritative condition for selecting nonlinear BSI calculation remains unresolved.
+**Status: intentionally unresolved by owner decision (2026-10-31).** Keep the activation threshold open. Do not invent a threshold or infer one automatically. Until an authoritative decision is made, the execution architecture must disclose the limitation and must not silently select a mode.
 
 ### D2 — Legacy 60% Longitudinal Rule — Deprecated
 
@@ -415,7 +415,7 @@ The canonical D2 weight remains `0.18`.
 
 ### U3 — Single-input longitudinal semantics — RESOLVED
 
-A single input is sufficient to execute the canonical **Single-Input Coherence Path** for structural/internal coherence analysis, but it is not sufficient to establish longitudinal continuity, trajectory, development, persistence, or change across time.
+**Owner confirmation (2026-10-31):** for a single-content analysis, assess internal coherence only. A single input is not sufficient to establish longitudinal continuity, trajectory, development, persistence, or change across time.
 
 Accordingly:
 
