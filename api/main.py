@@ -6,7 +6,7 @@ from api.mcp import mcp_router
 app = FastAPI(
     title="Behmanesh Structural Index",
     version="3.5",
-    description="BSI v3.5 canonical prompt package API; legacy scoring engine is explicitly identified.",
+    description="BSI v3.5 prompt package API and explicit evidence-backed scoring runtime.",
 )
 app.include_router(bsi_router, prefix="/bsi")
 app.include_router(prompt_router, prefix="/bsi")
