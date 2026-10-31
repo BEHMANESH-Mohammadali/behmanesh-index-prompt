@@ -31,7 +31,9 @@ def run_v35_scoring(assessment: Mapping[str, Any]) -> dict:
            supported_conclusion (each 0..100)
       reig: ERG/MRG/CRG/ARG/FRG integer scores (each 0..4)
 
-    ECC aggregate and the automatic nonlinear threshold remain unresolved.
+    ECC v2.0 aggregate is calculated as the mean absolute component gap;
+    signed gaps remain available for directional interpretation. The automatic
+    nonlinear threshold remains unresolved.
     REIG values must represent an audit of Draft Analysis, not the target text.
     """
     required = {
@@ -105,7 +107,7 @@ def run_v35_scoring(assessment: Mapping[str, Any]) -> dict:
             "D1-D7 and EIG assessments are inputs; this endpoint does not infer them from raw text.",
             "Single-content D2 is internal coherence only; no longitudinal inference is made.",
             "Nonlinear activation threshold remains unresolved; calculation mode was explicitly supplied.",
-            "ECC aggregate is omitted pending authoritative specification reconciliation.",
+            "ECC_Total is the ECC v2.0 mean absolute gap; signed gaps preserve overclaim/underclaim direction.",
             "REIG scores must audit Draft Analysis, not the target text.",
         ],
     }
