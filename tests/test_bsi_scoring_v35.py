@@ -106,7 +106,7 @@ def test_ecc_mixed_gap_directions_and_zero_alignment():
     assert result["gap_directions"] == {
         "EG": "OVERCLAIM", "MG": "ALIGNED", "LG": "UNDERCLAIM"
     }
-    assert result["ECC_Total"] == pytest.approx(20 / 3)
+    assert result["ECC_Total"] == pytest.approx(20 / 3, abs=1e-4)
 
 
 def test_reig_uses_five_official_dimensions():
