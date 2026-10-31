@@ -217,10 +217,18 @@ def verification(context: Mapping[str, Any]) -> StageResult:
         return StageResult(output={"blocked": True, "block_reason": "Source-level verification requires source_materials entries with source_ref and inspected text."},
                            verification_state="NOT_EXTERNALLY_VERIFIABLE",
                            limitation="RAG retrieval metadata/snippets do not establish source-level verification; provide inspected source text and a reference.")
-    return _call_model(context, "auditor",
+    audited = _call_model(context, "auditor",
         "Audit each material claim against the supplied retrieval results. Do not claim to open or inspect sources unless source text/URL content is actually supplied. Return JSON with verified_claims, unverified_claims, contradictions, verification_state, unresolved_gaps. Any claim not directly supported by inspected source text must remain unverified.",
         {"draft_analysis": analysis, "retrieval_signal": retrieval.get("retrieval_signal"),
          "source_materials": usable_sources})
+    if isinstance(audited.output, Mapping) and not audited.output.get("blocked"):
+        return StageResult(
+            output=audited.output,
+            evidence_refs=tuple(str(item["source_ref"]) for item in usable_sources),
+            verification_state="SOURCE_TEXT_REVIEWED_MODEL_ASSISTED",
+            limitation="Source text was supplied and reviewed with model assistance; this is not independent validation.",
+        )
+    return audited
 
 
 def assumption_excavation(context: Mapping[str, Any]) -> StageResult:
@@ -320,8 +328,15 @@ def execution_status(context: Mapping[str, Any]) -> StageResult:
     reread = context.get("final_reread", {})
     if not isinstance(reread, Mapping) or reread.get("blocked") or not reread.get("passed"):
         return StageResult(output={"blocked": True, "block_reason": "Final re-read did not pass."})
+    unresolved_t8 = any(
+        isinstance(context.get(name), Mapping)
+        and bool(context[name].get("unresolved_t8"))
+        for name in ("structural_analysis", "verification", "counterevidence",
+                     "competing_interpretations", "assumption_excavation")
+    )
     return StageResult(output={"status": "SELF_AUDIT_ONLY", "independently_validated": False,
-                               "unresolved_t8": False, "ready_for_completion": True})
+                               "unresolved_t8": unresolved_t8,
+                               "ready_for_completion": not unresolved_t8})
 
 
 def ecc_assessment(context: Mapping[str, Any]) -> StageResult:
@@ -378,13 +393,31 @@ def execute_bsi_v35(task: Mapping[str, Any]) -> dict[str, Any]:
     ecc_result = result.outputs.get("ecc", {})
     task_scope = _task({"task": task}).get("content_scope", "single_content")
     dimension_scores = task.get("dimension_scores")
-    if (not isinstance(dimension_scores, Mapping) or not isinstance(eig_result, Mapping)
-            or not eig_result.get("ready_for_scoring") or not isinstance(ecc_result, Mapping)
-            or not ecc_result.get("ready_for_scoring") or not isinstance(audit, Mapping)
-            or not audit.get("ready_for_scoring")):
+    dimension_evidence = task.get("dimension_score_evidence")
+    eig_basis = eig_result.get("evidence_for_each_gap") if isinstance(eig_result, Mapping) else None
+    ecc_basis = ecc_result.get("evidence_basis") if isinstance(ecc_result, Mapping) else None
+    reig_basis = audit.get("evidence_for_each_dimension") if isinstance(audit, Mapping) else None
+    def _has_basis(value: Any, keys: tuple[str, ...] | None = None) -> bool:
+        if not isinstance(value, Mapping):
+            return False
+        if keys is not None and not set(keys).issubset(value):
+            return False
+        return all(bool(value.get(key)) for key in (keys or tuple(value.keys())))
+    required_eig = ("MCG", "CEG", "FCG", "LCG")
+    required_reig = ("ERG", "MRG", "CRG", "ARG", "FRG")
+    required_dimensions = tuple(f"D{i}" for i in range(1, 8))
+    if (not isinstance(dimension_scores, Mapping)
+            or not set(required_dimensions).issubset(dimension_scores)
+            or not _has_basis(dimension_evidence, required_dimensions)
+            or not isinstance(eig_result, Mapping) or not eig_result.get("ready_for_scoring")
+            or not _has_basis(eig_basis, required_eig)
+            or not isinstance(ecc_result, Mapping) or not ecc_result.get("ready_for_scoring")
+            or not ecc_basis
+            or not isinstance(audit, Mapping) or not audit.get("ready_for_scoring")
+            or not _has_basis(reig_basis, required_reig)):
         response["status"] = "ANALYSIS_COMPLETE_SCORING_BLOCKED"
         response["completion"] = {"authorized": False, "status": "BLOCKED",
-                                  "blockers": ["Evidence-backed explicit D1-D7, EIG, ECC, and REIG inputs are incomplete."]}
+                                  "blockers": ["Evidence basis is missing for one or more explicit D1-D7, EIG, ECC, or Draft Analysis REIG inputs."]}
         return response
     try:
         assessment = {
