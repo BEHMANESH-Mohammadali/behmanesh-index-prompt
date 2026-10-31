@@ -20,6 +20,7 @@ async def health():
         "framework_version": "3.5",
         "prompt_version": "3.5",
         "prompt_package_endpoint": "/bsi/prompt",
-        "scoring_runtime": "legacy-v3.4.1",
-        "scoring_runtime_is_v3_5": False,
+        "scoring_runtime": "v3.5.0-explicit-input",
+        "scoring_runtime_is_v3_5": True,
+        "scoring_contract": "explicit evidence-backed assessments required",
     }
