@@ -306,10 +306,26 @@ def correction_and_reanalysis(context: Mapping[str, Any]) -> StageResult:
         "Correct only defects identified by the REIG audit. Preserve source/evidence distinctions and all explicit uncertainties. Return JSON with corrected_draft, defects_remaining, needs_reanalysis, ready_for_scoring.",
         {"draft_analysis": draft, "reig_audit": audit})
     if isinstance(corrected.output, Mapping) and not corrected.output.get("blocked"):
-        return StageResult(output={**dict(corrected.output), "reig_audit": audit},
-                           evidence_refs=corrected.evidence_refs,
-                           verification_state=corrected.verification_state,
-                           limitation=corrected.limitation)
+        corrected_draft = corrected.output.get("corrected_draft")
+        if not isinstance(corrected_draft, Mapping):
+            return StageResult(output={"blocked": True, "block_reason": "Correction model did not return a corrected_draft object."})
+        refreshed_audit = reig_draft_audit({**context, "draft_analysis": corrected_draft})
+        if not isinstance(refreshed_audit.output, Mapping) or refreshed_audit.output.get("blocked"):
+            return StageResult(output={"blocked": True, "block_reason": "REIG could not be rerun against the corrected draft."},
+                               limitation=refreshed_audit.limitation)
+        refreshed = refreshed_audit.output
+        defects_remaining = bool(corrected.output.get("defects_remaining"))
+        needs_reanalysis = bool(corrected.output.get("needs_reanalysis") or refreshed.get("needs_reanalysis") or defects_remaining)
+        return StageResult(
+            output={**dict(corrected.output), "corrected_draft": corrected_draft,
+                    "reig_audit": refreshed, "needs_reanalysis": needs_reanalysis,
+                    "ready_for_scoring": bool(corrected.output.get("ready_for_scoring")
+                                              and refreshed.get("ready_for_scoring")
+                                              and not needs_reanalysis)},
+            evidence_refs=corrected.evidence_refs,
+            verification_state=corrected.verification_state,
+            limitation=corrected.limitation or "REIG was rerun after correction; model-assisted self-audit is not independent validation.",
+        )
     return corrected
 
 
