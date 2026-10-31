@@ -77,11 +77,11 @@ class _FakeAdapter:
         elif "excavate explicit and implicit assumptions" in instruction:
             output = {"assumptions": [], "counterfactual_tests": [], "author_stated": [], "analyst_inferred": [], "uncertainty": "fixture"}
         elif "assess eig components" in instruction:
-            output = {"raw_gaps": {"MCG": 2, "CEG": 3, "FCG": 2, "LCG": 4}, "lcg_interpretation": "Unknown", "evidence_for_each_gap": ["fixture"], "missing_evidence": [], "ready_for_scoring": True}
+            output = {"raw_gaps": {"MCG": 2, "CEG": 3, "FCG": 2, "LCG": 4}, "lcg_interpretation": "Unknown", "evidence_for_each_gap": {"MCG": ["fixture"], "CEG": ["fixture"], "FCG": ["fixture"], "LCG": ["fixture"]}, "missing_evidence": [], "ready_for_scoring": True}
         elif "calibrate the confidence" in instruction:
             output = {"claimed_confidence": 70, "supported_evidence": 60, "supported_method": 60, "supported_conclusion": 55, "evidence_basis": ["fixture"], "uncertainty": "fixture", "ready_for_scoring": True}
         elif "apply official reig dimensions" in instruction:
-            output = {"scores": {"ERG": 1, "MRG": 1, "CRG": 1, "ARG": 1, "FRG": 1}, "evidence_for_each_dimension": ["fixture"], "defects": [], "needs_reanalysis": False, "ready_for_scoring": True}
+            output = {"scores": {"ERG": 1, "MRG": 1, "CRG": 1, "ARG": 1, "FRG": 1}, "evidence_for_each_dimension": {"ERG": ["fixture"], "MRG": ["fixture"], "CRG": ["fixture"], "ARG": ["fixture"], "FRG": ["fixture"]}, "defects": [], "needs_reanalysis": False, "ready_for_scoring": True}
         elif "final re-read" in instruction:
             output = {"passed": True, "defects": [], "unresolved_gaps": [], "ready_for_final": True}
         else:
@@ -108,6 +108,7 @@ def test_full_orchestration_connects_existing_stages_and_scores_only_explicit_in
         "model_router": router,
         "source_materials": [{"source_ref": "fixture:source-1", "text": "Inspected source text for a fixture claim."}],
         "dimension_scores": {f"D{i}": 75 for i in range(1, 8)},
+        "dimension_score_evidence": {f"D{i}": ["fixture:source-1"] for i in range(1, 8)},
         "calculation_mode": "linear",
         "content_scope": "single_content",
     })
