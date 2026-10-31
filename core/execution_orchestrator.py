@@ -67,16 +67,28 @@ class BSIExecutionOrchestrator:
                 )
                 if not isinstance(result, StageResult):
                     raise TypeError("Stage handler must return StageResult.")
-                status = StageStatus.NOT_APPLICABLE if result.not_applicable else StageStatus.COMPLETED
+                correction_unresolved = (
+                    stage == "correction_and_reanalysis"
+                    and isinstance(result.output, Mapping)
+                    and bool(result.output.get("needs_reanalysis") or result.output.get("correction_limit_reached"))
+                )
+                status = (
+                    StageStatus.BLOCKED if correction_unresolved
+                    else StageStatus.NOT_APPLICABLE if result.not_applicable
+                    else StageStatus.COMPLETED
+                )
+                limitation = result.limitation
+                if correction_unresolved and not limitation:
+                    limitation = "Correction/reanalysis remains unresolved; completion is blocked."
                 trace.stages.append(StageRecord(
                     stage=stage, status=status,
                     evidence_refs=list(result.evidence_refs),
                     verification_state=result.verification_state,
-                    limitation=result.limitation, output=result.output,
+                    limitation=limitation, output=result.output,
                 ))
                 outputs[stage] = result.output
-                if stage == "task_intake" and isinstance(result.output, Mapping):
-                    unresolved_t8 = bool(result.output.get("unresolved_t8", False))
+                if isinstance(result.output, Mapping):
+                    unresolved_t8 = unresolved_t8 or bool(result.output.get("unresolved_t8", False))
             except Exception as exc:
                 trace.stages.append(StageRecord(
                     stage=stage, status=StageStatus.BLOCKED,
