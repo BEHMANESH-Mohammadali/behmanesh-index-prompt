@@ -57,16 +57,29 @@ Its four-layer structure remains:
 
 Its relationship with Recursive EIG remains unchanged.
 
-### Unresolved implementation detail
+### Resolved computational semantics
 
-The exact computational aggregation semantics of ECC v2.0 have not yet been canonically resolved in this matrix.
+The authoritative ECC v2.0 document explicitly defines the aggregate:
 
-Therefore:
+`ECC_Total = mean(|EG|, |MG|, |LG|)`
 
-- execution architecture may enforce ECC where required;
-- execution architecture may not redefine ECC;
-- execution architecture may not substitute another calibration mechanism;
-- execution architecture may not invent aggregation or weighting rules.
+where:
+
+- `EG = CC-C − SC-E`
+- `MG = CC-C − SC-M`
+- `LG = CC-C − SC-L`
+
+The signed component gaps MUST be preserved in the output. Their direction is analytically meaningful:
+
+- positive gap: claimed confidence exceeds supported confidence (**overclaim / overestimation**);
+- negative gap: supported confidence exceeds claimed confidence (**Underclaim / underconfidence**);
+- zero gap: claimed and supported confidence are aligned.
+
+`ECC_Total` is the arithmetic mean of the absolute component gaps, on the same 0–100 scale. The aggregate expresses magnitude of calibration mismatch; it MUST NOT replace or erase the signed component gaps or their directional interpretation.
+
+The ECC v2.0 interpretation bands apply to the aggregate exactly as specified in that source. No new weighting, normalization, or alternative aggregation is introduced.
+
+This resolution follows ECC v2.0 §§ “محاسبه شکاف‌ها”, “Underconfidence”, and “شاخص نهایی ECC”. The earlier unresolved status in this matrix is superseded by this explicit source-based resolution; it is retained here as a documented canonicalization decision, not treated as if the ambiguity never existed.
 
 ---
 
