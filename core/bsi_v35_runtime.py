@@ -36,11 +36,27 @@ def run_v35_scoring(assessment: Mapping[str, Any]) -> dict:
     """
     required = {
         "dimension_scores", "eig_gaps", "lcg_interpretation",
-        "calculation_mode", "ecc", "reig",
+        "calculation_mode", "ecc", "reig", "content_scope",
+        "d2_assessment_basis",
     }
     missing = required - set(assessment)
     if missing:
         raise ScoringInputError(f"Missing assessment fields: {sorted(missing)}")
+
+    content_scope = assessment["content_scope"]
+    d2_basis = assessment["d2_assessment_basis"]
+    if content_scope not in {"single_content", "longitudinal_corpus"}:
+        raise ScoringInputError(
+            "content_scope must be single_content or longitudinal_corpus."
+        )
+    expected_d2_basis = {
+        "single_content": "internal_coherence_only",
+        "longitudinal_corpus": "longitudinal_evidence",
+    }[content_scope]
+    if d2_basis != expected_d2_basis:
+        raise ScoringInputError(
+            "D2 assessment basis does not match content_scope."
+        )
 
     eig = calculate_eig(
         assessment["eig_gaps"],
@@ -79,12 +95,15 @@ def run_v35_scoring(assessment: Mapping[str, Any]) -> dict:
         "engine_version": "3.5.0-explicit-input",
         "engine_status": "V3_5_SCORING_CONNECTED",
         "assessment_mode": "EXPLICIT_EVIDENCE_BACKED_INPUTS",
+        "content_scope": content_scope,
+        "D2_assessment_basis": d2_basis,
         "BSI": bsi,
         "EIG": eig,
         "ECC": ecc,
         "REIG": reig,
         "limitations": [
             "D1-D7 and EIG assessments are inputs; this endpoint does not infer them from raw text.",
+            "Single-content D2 is internal coherence only; no longitudinal inference is made.",
             "Nonlinear activation threshold remains unresolved; calculation mode was explicitly supplied.",
             "ECC aggregate is omitted pending authoritative specification reconciliation.",
             "REIG scores must audit Draft Analysis, not the target text.",
