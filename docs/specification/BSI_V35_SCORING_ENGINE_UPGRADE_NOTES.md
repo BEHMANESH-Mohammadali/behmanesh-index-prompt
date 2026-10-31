@@ -24,13 +24,13 @@ The legacy `core/bsi_engine.py` and `core/bsi_pipeline.py` remain intact for tra
 - No keyword-derived D1-D7 score is produced by this new scoring module.
 - All seven dimension scores must be supplied. Missing D2 is not imputed, set to zero, or silently renormalized.
 - Calculation mode must be explicitly supplied as `linear` or `nonlinear`. The unresolved automatic nonlinear threshold is not invented.
-- ECC component gaps can be calculated, but `ECC_Total` is deliberately omitted because ECC v2.0 and the canonicalization matrix are inconsistent about whether aggregation is unresolved.
+- ECC v2.0 aggregation is implemented exactly as specified: `ECC_Total = mean(|EG|, |MG|, |LG|)`. Signed EG/MG/LG values and per-gap direction (OVERCLAIM / UNDERCLAIM / ALIGNED) are retained so the aggregate does not erase whether confidence is overstated or understated. The matrix's earlier unresolved note is superseded by a documented source-based resolution.
 - Missing/extra EIG or REIG dimensions and out-of-range values raise explicit input errors.
 
 ## Known integration work still required
 
 1. The EIG penalty decision is resolved for this upgrade: use `EIG_avg / 20`, confirmed by the owner on 2026-10-31. The older formula reference still needs reconciliation before production integration; the canonicalization matrix records the approved mapping on this branch.
-2. Resolve ECC aggregation authority by reviewing the complete SOP and architectural invariants alongside ECC v2.0.
+2. ECC aggregation authority is resolved for this implementation slice: ECC v2.0 explicitly defines the mean absolute component-gap aggregate; the canonicalization matrix records the resolution and signed component gaps remain available for directional interpretation.
 3. Single-content D2 handling is resolved by the owner: assess internal coherence only, do not infer longitudinal trajectory, and do not treat unavailable longitudinal evidence as a defect. The D2 score must still be evidence-backed; no automatic imputation or weight renormalization is performed.
 4. Decide an authoritative nonlinear-selection rule or keep mode explicit at the caller.
 5. Review the new runtime against the entire canonical output contract and expand integration tests. The `/bsi/score`, `/bsi/analyze`, `/bsi/compare`, and MCP `analyze_with_bsi` interfaces call the explicit-input runtime. The legacy MCP route no longer invokes the v3.4.1 heuristic engine. A separate evidence-analysis layer that derives defensible D1-D7/EIG/ECC/REIG inputs from source content is not yet implemented; raw-text-only scoring is intentionally rejected. The version endpoint explicitly reports that autonomous evidence analysis and the Draft correction loop are not yet provided.
