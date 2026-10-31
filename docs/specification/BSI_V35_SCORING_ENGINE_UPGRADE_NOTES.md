@@ -6,7 +6,7 @@ Status: **draft on branch `feat/bsi-v3.5-scoring-engine`; not merged**
 
 Adds `core/bsi_scoring_v35.py` as a deterministic scoring module separate from the legacy v3.4.1 engine. Adds unit tests in `tests/test_bsi_scoring_v35.py`.
 
-The existing `core/bsi_engine.py`, pipeline, API wiring, prompt, ontology, and official criteria are not replaced or modified in this slice.
+The legacy `core/bsi_engine.py` and `core/bsi_pipeline.py` remain intact for traceability, but the `/bsi/score`, `/bsi/analyze`, and `/bsi/compare` routes now use the new explicit-input v3.5 runtime. API scoring requires evidence-backed assessment objects; it no longer silently turns raw text into legacy heuristic scores.
 
 ## Preserved semantics
 
@@ -33,7 +33,7 @@ The existing `core/bsi_engine.py`, pipeline, API wiring, prompt, ontology, and o
 2. Resolve ECC aggregation authority by reviewing the complete SOP and architectural invariants alongside ECC v2.0.
 3. Single-content D2 handling is resolved by the owner: assess internal coherence only, do not infer longitudinal trajectory, and do not treat unavailable longitudinal evidence as a defect. The D2 score must still be evidence-backed; no automatic imputation or weight renormalization is performed.
 4. Decide an authoritative nonlinear-selection rule or keep mode explicit at the caller.
-5. Review the new module against the entire canonical output contract, engine/pipeline/API call paths, and existing regression suite before wiring it into production.
+5. Review the new runtime against the entire canonical output contract and expand integration tests. The API now calls the explicit-input runtime, but a separate evidence-analysis layer that derives defensible D1-D7/EIG/ECC/REIG inputs from source content is not yet implemented; raw-text-only scoring is intentionally rejected.
 6. Run CI / unit tests in the repository environment and inspect diff, status, and regression results before proposing a merge.
 
 ## Non-goals
