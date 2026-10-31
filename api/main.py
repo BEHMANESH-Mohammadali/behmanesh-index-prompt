@@ -2,6 +2,7 @@ from fastapi import FastAPI
 from api.routes.bsi import router as bsi_router
 from api.routes.prompt import prompt_router
 from api.mcp import mcp_router
+from api.routes.execution import execution_router
 
 app = FastAPI(
     title="Behmanesh Structural Index",
@@ -11,6 +12,7 @@ app = FastAPI(
 app.include_router(bsi_router, prefix="/bsi")
 app.include_router(prompt_router, prefix="/bsi")
 app.include_router(mcp_router)
+app.include_router(execution_router, prefix="/bsi")
 
 
 @app.get("/health")
@@ -23,4 +25,6 @@ async def health():
         "scoring_runtime": "v3.5.0-explicit-input",
         "scoring_runtime_is_v3_5": True,
         "scoring_contract": "explicit evidence-backed assessments required",
+        "execution_endpoint": "/bsi/execute",
+        "autonomous_execution": "guarded; blocks when mandatory evidence/model stages are unresolved",
     }
