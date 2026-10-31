@@ -72,14 +72,20 @@ class BSIExecutionOrchestrator:
                     and isinstance(result.output, Mapping)
                     and bool(result.output.get("needs_reanalysis") or result.output.get("correction_limit_reached"))
                 )
+                explicit_block = (
+                    isinstance(result.output, Mapping)
+                    and bool(result.output.get("blocked", False))
+                )
                 status = (
-                    StageStatus.BLOCKED if correction_unresolved
+                    StageStatus.BLOCKED if correction_unresolved or explicit_block
                     else StageStatus.NOT_APPLICABLE if result.not_applicable
                     else StageStatus.COMPLETED
                 )
                 limitation = result.limitation
                 if correction_unresolved and not limitation:
                     limitation = "Correction/reanalysis remains unresolved; completion is blocked."
+                if explicit_block and not limitation:
+                    limitation = str(result.output.get("block_reason") or "Stage explicitly blocked completion.")
                 trace.stages.append(StageRecord(
                     stage=stage, status=status,
                     evidence_refs=list(result.evidence_refs),
