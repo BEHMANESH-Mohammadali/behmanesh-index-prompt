@@ -51,11 +51,21 @@ class ExecutionTrace:
     independent_evaluation: str = "BEST-EFFORT SELF-AUDIT — NOT INDEPENDENTLY VALIDATED"
 
     def completion_gate(self, *, unresolved_t8: bool = False) -> dict[str, Any]:
-        incomplete = [
-            item.stage for item in self.stages
-            if item.stage in MANDATORY_STAGES
-            and item.status not in {StageStatus.COMPLETED, StageStatus.NOT_APPLICABLE}
-        ]
+        # Missing records are incomplete too. A trace cannot pass merely because
+        # it omitted mandatory stages from its list.
+        by_name: dict[str, list[StageRecord]] = {}
+        for item in self.stages:
+            by_name.setdefault(item.stage, []).append(item)
+
+        incomplete: list[str] = []
+        for stage in MANDATORY_STAGES:
+            records = by_name.get(stage, [])
+            if not records or any(
+                item.status not in {StageStatus.COMPLETED, StageStatus.NOT_APPLICABLE}
+                for item in records
+            ):
+                incomplete.append(stage)
+
         blockers = list(incomplete)
         if unresolved_t8:
             blockers.append("unresolved_T8_claim_classification")
