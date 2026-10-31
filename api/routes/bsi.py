@@ -19,7 +19,10 @@ def version():
         "v3_5_prompt_package": "/bsi/prompt",
         "scoring_endpoints_are_v3_5": True,
         "scoring_contract": "Explicit evidence-backed assessments required; no heuristic score generation from raw text.",
-        "pipeline_stages": ["BSI", "EIG", "ECC", "DRAFT", "REIG", "FINAL"],
+        "scoring_components": ["BSI_D1_D7", "EIG", "ECC_COMPONENT_GAPS", "REIG_DRAFT_AUDIT_INPUT"],
+        "execution_scope": "EXPLICIT_INPUT_SCORING_ONLY",
+        "autonomous_evidence_analysis": False,
+        "draft_correction_loop": False,
         "api_version": "1.3.0",
         "endpoints": ["/bsi/score", "/bsi/analyze", "/bsi/compare", "/bsi/version", "/bsi/prompt"]
     }
