@@ -33,8 +33,9 @@ The legacy `core/bsi_engine.py` and `core/bsi_pipeline.py` remain intact for tra
 2. Resolve ECC aggregation authority by reviewing the complete SOP and architectural invariants alongside ECC v2.0.
 3. Single-content D2 handling is resolved by the owner: assess internal coherence only, do not infer longitudinal trajectory, and do not treat unavailable longitudinal evidence as a defect. The D2 score must still be evidence-backed; no automatic imputation or weight renormalization is performed.
 4. Decide an authoritative nonlinear-selection rule or keep mode explicit at the caller.
-5. Review the new runtime against the entire canonical output contract and expand integration tests. The API now calls the explicit-input runtime, but a separate evidence-analysis layer that derives defensible D1-D7/EIG/ECC/REIG inputs from source content is not yet implemented; raw-text-only scoring is intentionally rejected.
+5. Review the new runtime against the entire canonical output contract and expand integration tests. The `/bsi/score`, `/bsi/analyze`, `/bsi/compare`, and MCP `analyze_with_bsi` interfaces call the explicit-input runtime. The legacy MCP route no longer invokes the v3.4.1 heuristic engine. A separate evidence-analysis layer that derives defensible D1-D7/EIG/ECC/REIG inputs from source content is not yet implemented; raw-text-only scoring is intentionally rejected. The version endpoint explicitly reports that autonomous evidence analysis and the Draft correction loop are not yet provided.
 6. Run CI / unit tests in the repository environment and inspect diff, status, and regression results before proposing a merge.
+7. Keep every public scoring interface, including MCP, on the v3.5 explicit-input contract; do not leave a legacy heuristic scoring bypass exposed.
 
 ## Non-goals
 
