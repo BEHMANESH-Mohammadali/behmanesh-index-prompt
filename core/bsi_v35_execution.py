@@ -7,17 +7,19 @@ not proof. Scoring is allowed only from explicitly supplied assessments.
 from __future__ import annotations
 
 import json
+import os
 import re
 from typing import Any, Mapping
 
 from core.execution_orchestrator import StageResult
 from core.prompt_registry import load_bsi_v35_package
-from core.model_contracts import ModelRequest, ModelAdapterError
+from core.model_contracts import ModelRequest, ModelAdapterError, ModelRouter
+from core.model_adapters import OpenAICompatibleChatAdapter, StaticModelRouter
+from core.local_model_adapters import OllamaChatAdapter
 from core.bsi_v35_runtime import run_v35_scoring
 from core.bsi_scoring_v35 import ScoringInputError
 from core.rag.rag_engine import evaluate_claim_with_rag
 from core.bsi_engine import (
-    BSIEngine,
     extract_core_claim,
     excavate_assumptions,
     detect_domain,
@@ -368,3 +370,43 @@ def execute_bsi_v35(task: Mapping[str, Any]) -> dict[str, Any]:
         response["status"] = "ANALYSIS_COMPLETE_SCORING_BLOCKED"
         response["completion"] = {"authorized": False, "status": "BLOCKED", "blockers": [f"Scoring inputs invalid or incomplete: {exc}"]}
     return response
+
+
+
+def configured_model_router() -> StaticModelRouter:
+    """Build analyst/auditor roles from explicit environment configuration.
+
+    Local Ollama is preferred when role-specific or shared local model names are
+    supplied. Otherwise an OpenAI-compatible endpoint must be explicitly set.
+    No network call occurs until a stage invokes generate().
+    """
+    shared_local = os.getenv("BSI_OLLAMA_MODEL", "").strip()
+    analyst_local = os.getenv("BSI_OLLAMA_MODEL_ANALYST", shared_local).strip()
+    auditor_local = os.getenv("BSI_OLLAMA_MODEL_AUDITOR", shared_local).strip()
+    if analyst_local and auditor_local:
+        return StaticModelRouter({
+            "analyst": OllamaChatAdapter(model=analyst_local),
+            "auditor": OllamaChatAdapter(model=auditor_local),
+        })
+
+    base_url = os.getenv("BSI_MODEL_BASE_URL", "").strip()
+    shared_model = os.getenv("BSI_MODEL_NAME", "").strip()
+    analyst_model = os.getenv("BSI_MODEL_NAME_ANALYST", shared_model).strip()
+    auditor_model = os.getenv("BSI_MODEL_NAME_AUDITOR", shared_model).strip()
+    if base_url and analyst_model and auditor_model:
+        return StaticModelRouter({
+            "analyst": OpenAICompatibleChatAdapter(
+                base_url=base_url, model=analyst_model,
+                api_key=os.getenv("BSI_MODEL_API_KEY", ""),
+                provider_label=os.getenv("BSI_MODEL_PROVIDER", "openai-compatible"),
+            ),
+            "auditor": OpenAICompatibleChatAdapter(
+                base_url=base_url, model=auditor_model,
+                api_key=os.getenv("BSI_MODEL_API_KEY", ""),
+                provider_label=os.getenv("BSI_MODEL_PROVIDER", "openai-compatible"),
+            ),
+        })
+    raise ModelAdapterError(
+        "Configure BSI_OLLAMA_MODEL (or role-specific Ollama model names), "
+        "or BSI_MODEL_BASE_URL plus BSI_MODEL_NAME (or role-specific names)."
+    )
