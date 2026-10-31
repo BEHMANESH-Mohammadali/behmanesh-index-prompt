@@ -76,13 +76,37 @@ def test_eig_penalty_is_bounded():
         calculate_bsi({key: 80 for key in BSI_WEIGHTS}, .51, calculation_mode="linear")
 
 
-def test_ecc_returns_components_without_unresolved_aggregate():
+def test_ecc_calculates_v2_absolute_gap_aggregate_and_preserves_direction():
     result = calculate_ecc_gaps(80, 60, 70, 50)
     assert result["EG"] == 20
     assert result["MG"] == 10
     assert result["LG"] == 30
-    assert "ECC_Total" not in result
-    assert result["aggregate_status"] == "NOT_CALCULATED_SPECIFICATION_CONFLICT"
+    assert result["gap_directions"] == {
+        "EG": "OVERCLAIM", "MG": "OVERCLAIM", "LG": "OVERCLAIM"
+    }
+    assert result["ECC_Total"] == pytest.approx(20)
+    assert result["aggregate_formula"] == "mean(abs(EG), abs(MG), abs(LG))"
+    assert result["aggregate_status"] == "CALCULATED_PER_ECC_V2.0"
+
+
+def test_ecc_negative_gaps_are_preserved_as_underclaim():
+    result = calculate_ecc_gaps(50, 70, 60, 80)
+    assert result["EG"] == -20
+    assert result["MG"] == -10
+    assert result["LG"] == -30
+    assert set(result["gap_directions"].values()) == {"UNDERCLAIM"}
+    assert result["ECC_Total"] == pytest.approx(20)
+
+
+def test_ecc_mixed_gap_directions_and_zero_alignment():
+    result = calculate_ecc_gaps(60, 50, 60, 70)
+    assert result["EG"] == 10
+    assert result["MG"] == 0
+    assert result["LG"] == -10
+    assert result["gap_directions"] == {
+        "EG": "OVERCLAIM", "MG": "ALIGNED", "LG": "UNDERCLAIM"
+    }
+    assert result["ECC_Total"] == pytest.approx(20 / 3)
 
 
 def test_reig_uses_five_official_dimensions():
@@ -120,7 +144,7 @@ def test_runtime_integrates_all_scoring_stages():
     assert result["engine_status"] == "V3_5_SCORING_CONNECTED"
     assert result["EIG"]["penalty_formula"] == "EIG_avg / 20"
     assert result["REIG"]["REIG_Total"] == 2
-    assert "ECC_Total" not in result["ECC"]
+    assert result["ECC"]["ECC_Total"] == pytest.approx(20)
 
 
 def test_runtime_rejects_missing_assessment_fields():
