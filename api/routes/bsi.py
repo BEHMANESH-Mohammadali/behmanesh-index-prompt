@@ -1,16 +1,11 @@
 from fastapi import APIRouter
-from core.bsi_engine import compute_bsi
-from core.bsi_pipeline import run_pipeline
 from core.bsi_v35_runtime import run_v35_scoring
 from core.bsi_scoring_v35 import ScoringInputError
 from datetime import datetime
 
 router = APIRouter()
 
-# The prompt framework is canonical v3.5, but these score routes still invoke
-# the legacy v3.4.1 deterministic engine. Keep the distinction explicit.
 FRAMEWORK_VERSION = "3.5"
-LEGACY_ENGINE_VERSION = "3.4.1"
 ENGINE_STATUS = "V3_5_SCORING_CONNECTED"
 
 
