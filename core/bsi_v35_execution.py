@@ -37,6 +37,11 @@ def _text(context: Mapping[str, Any]) -> str:
     return value if isinstance(value, str) else ""
 
 
+def _public_task(task: Mapping[str, Any]) -> dict[str, Any]:
+    """Exclude runtime objects/secrets from prompts and JSON responses."""
+    return {key: value for key, value in task.items() if key != "model_router"}
+
+
 def _json_object(text: str) -> dict[str, Any]:
     candidate = text.strip()
     if candidate.startswith("```"):
@@ -67,7 +72,7 @@ def _call_model(context: Mapping[str, Any], role: str, instruction: str, payload
             task=role,
             system_instruction=instruction,
             input_text=json.dumps({
-                "task": dict(_task(context)),
+                "task": _public_task(_task(context)),
                 "stage_context": dict(payload),
                 "canonical_prompt_package": prompt,
             }, ensure_ascii=False, default=str),
@@ -359,7 +364,7 @@ def execute_bsi_v35(task: Mapping[str, Any]) -> dict[str, Any]:
              "verification_state": r.verification_state, "limitation": r.limitation}
             for r in result.trace.stages
         ],
-        "outputs": result.outputs,
+        "outputs": {**result.outputs, "task": _public_task(_task({"task": task}))},
         "scoring": None,
     }
     if not result.completion["authorized"]:
