@@ -43,3 +43,16 @@ def test_correction_loop_is_bounded_and_preserves_limit_disclosure():
     assert calls == [1, 2]
     record = next(x for x in result.trace.stages if x.stage == "correction_and_reanalysis")
     assert "maximum" in record.limitation
+
+
+def test_correction_loop_blocks_completion_when_limit_is_reached():
+    def correction(_):
+        return StageResult(output={"needs_reanalysis": True})
+    handlers = {stage: complete_handler for stage in MANDATORY_STAGES}
+    handlers["correction_and_reanalysis"] = correction
+    result = BSIExecutionOrchestrator(handlers, max_correction_rounds=1).run(
+        {"text": "A sufficiently long target text."}
+    )
+    assert result.completion["authorized"] is False
+    record = next(x for x in result.trace.stages if x.stage == "correction_and_reanalysis")
+    assert record.status.value == "BLOCKED"
