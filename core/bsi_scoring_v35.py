@@ -154,25 +154,40 @@ def calculate_ecc_gaps(
     supported_method: float,
     supported_conclusion: float,
 ) -> dict:
-    """Return official ECC component gaps without an aggregate.
+    """Calculate ECC v2.0 signed component gaps and absolute-gap aggregate.
 
-    The current canonicalization matrix marks ECC aggregation unresolved.
-    Component gaps are therefore returned, but ECC_Total is intentionally
-    omitted until the specification conflict is resolved.
+    Signed gaps preserve direction (overclaim vs. underclaim); ECC_Total
+    follows the authoritative v2.0 arithmetic mean of their absolute values.
     """
     cc = _bounded_number(claimed_confidence, "CC-C", 0, 100)
     se = _bounded_number(supported_evidence, "SC-E", 0, 100)
     sm = _bounded_number(supported_method, "SC-M", 0, 100)
     sl = _bounded_number(supported_conclusion, "SC-L", 0, 100)
+    gaps = {
+        "EG": round(cc - se, 4),
+        "MG": round(cc - sm, 4),
+        "LG": round(cc - sl, 4),
+    }
+    directions = {
+        key: (
+            "OVERCLAIM" if value > 0
+            else "UNDERCLAIM" if value < 0
+            else "ALIGNED"
+        )
+        for key, value in gaps.items()
+    }
+    total = sum(abs(value) for value in gaps.values()) / 3.0
     return {
         "CC-C": cc,
         "SC-E": se,
         "SC-M": sm,
         "SC-L": sl,
-        "EG": round(cc - se, 4),
-        "MG": round(cc - sm, 4),
-        "LG": round(cc - sl, 4),
-        "aggregate_status": "NOT_CALCULATED_SPECIFICATION_CONFLICT",
+        **gaps,
+        "gap_directions": directions,
+        "ECC_Total": round(total, 4),
+        "aggregate_formula": "mean(abs(EG), abs(MG), abs(LG))",
+        "aggregate_scale": "0-100",
+        "aggregate_status": "CALCULATED_PER_ECC_V2.0",
     }
 
 
