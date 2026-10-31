@@ -165,12 +165,14 @@ def counterevidence(context: Mapping[str, Any]) -> StageResult:
     signal = retrieval.get("retrieval_signal", {})
     if not isinstance(signal, Mapping):
         signal = {}
-    if not retrieval.get("source_count"):
-        return StageResult(output={"blocked": True, "block_reason": "Counterevidence search has no retrievable source leads."},
+    supplied_sources = _task(context).get("source_materials", [])
+    if not retrieval.get("source_count") and not supplied_sources:
+        return StageResult(output={"blocked": True, "block_reason": "Counterevidence search has neither retrieval leads nor supplied source materials."},
                            limitation="Do not equate absence of retrieved evidence with support or absence of contradiction.")
     return _call_model(context, "auditor",
         "Find counterevidence and falsifiers for the target claims. Use only supplied source metadata as leads; do not invent sources. Return JSON with counterevidence, searched_sources, unresolved_gaps, and sufficient.",
-        {"target_text": text, "retrieval_signal": signal})
+        {"target_text": text, "retrieval_signal": signal,
+         "source_materials": supplied_sources})
 
 
 def competing_interpretations(context: Mapping[str, Any]) -> StageResult:
@@ -200,12 +202,20 @@ def verification(context: Mapping[str, Any]) -> StageResult:
     retrieval = context.get("evidence_retrieval_or_gap_record", {})
     if not isinstance(analysis, Mapping) or analysis.get("blocked"):
         return StageResult(output={"blocked": True, "block_reason": "No draft analysis to verify."})
-    if not isinstance(retrieval, Mapping) or not retrieval.get("source_count"):
-        return StageResult(output={"blocked": True, "block_reason": "No external source leads were retrieved; verification remains unresolved."},
-                           verification_state="NOT_EXTERNALLY_VERIFIABLE")
+    source_materials = _task(context).get("source_materials", [])
+    usable_sources = [
+        item for item in source_materials
+        if isinstance(item, Mapping) and isinstance(item.get("text"), str)
+        and item.get("text", "").strip() and item.get("source_ref")
+    ]
+    if not usable_sources:
+        return StageResult(output={"blocked": True, "block_reason": "Source-level verification requires source_materials entries with source_ref and inspected text."},
+                           verification_state="NOT_EXTERNALLY_VERIFIABLE",
+                           limitation="RAG retrieval metadata/snippets do not establish source-level verification; provide inspected source text and a reference.")
     return _call_model(context, "auditor",
         "Audit each material claim against the supplied retrieval results. Do not claim to open or inspect sources unless source text/URL content is actually supplied. Return JSON with verified_claims, unverified_claims, contradictions, verification_state, unresolved_gaps. Any claim not directly supported by inspected source text must remain unverified.",
-        {"draft_analysis": analysis, "retrieval_signal": retrieval.get("retrieval_signal")})
+        {"draft_analysis": analysis, "retrieval_signal": retrieval.get("retrieval_signal"),
+         "source_materials": usable_sources})
 
 
 def assumption_excavation(context: Mapping[str, Any]) -> StageResult:
@@ -240,8 +250,10 @@ def draft_analysis(context: Mapping[str, Any]) -> StageResult:
     analysis = context.get("structural_analysis", {})
     assumptions = context.get("assumption_excavation", {})
     verification_result = context.get("verification", {})
-    if any(not isinstance(x, Mapping) or x.get("blocked") for x in (analysis, assumptions, verification_result)):
-        return StageResult(output={"blocked": True, "block_reason": "Required analysis, assumption excavation, or verification is blocked."})
+    eig_result = context.get("eig", {})
+    ecc_result = context.get("ecc", {})
+    if any(not isinstance(x, Mapping) or x.get("blocked") for x in (analysis, assumptions, verification_result, eig_result, ecc_result)):
+        return StageResult(output={"blocked": True, "block_reason": "Required analysis, assumption excavation, verification, EIG, or ECC is blocked."})
     return StageResult(output={
         "draft": {"structural_analysis": analysis, "assumption_excavation": assumptions,
                   "verification": verification_result, "eig": context.get("eig"), "ecc": context.get("ecc")},
@@ -264,12 +276,28 @@ def correction_and_reanalysis(context: Mapping[str, Any]) -> StageResult:
     draft = context.get("draft_analysis", {})
     if not isinstance(audit, Mapping) or audit.get("blocked") or not isinstance(draft, Mapping) or draft.get("blocked"):
         return StageResult(output={"blocked": True, "block_reason": "Correction cannot run without a draft and REIG audit."})
-    if not audit.get("needs_reanalysis"):
+    previous = context.get("previous_correction")
+    if isinstance(previous, Mapping):
+        current_draft = previous.get("corrected_draft", draft)
+        current_audit = previous.get("reig_audit", audit)
+        if not previous.get("needs_reanalysis") and not previous.get("defects_remaining"):
+            return StageResult(output={**dict(previous), "needs_reanalysis": False,
+                                       "corrected_draft": current_draft,
+                                       "reig_audit": current_audit,
+                                       "ready_for_scoring": bool(previous.get("ready_for_scoring") and current_audit.get("ready_for_scoring"))})
+        draft, audit = current_draft, current_audit
+    elif not audit.get("needs_reanalysis"):
         return StageResult(output={"needs_reanalysis": False, "corrected_draft": draft,
                                    "reig_audit": audit, "ready_for_scoring": bool(audit.get("ready_for_scoring"))})
-    return _call_model(context, "analyst",
+    corrected = _call_model(context, "analyst",
         "Correct only defects identified by the REIG audit. Preserve source/evidence distinctions and all explicit uncertainties. Return JSON with corrected_draft, defects_remaining, needs_reanalysis, ready_for_scoring.",
         {"draft_analysis": draft, "reig_audit": audit})
+    if isinstance(corrected.output, Mapping) and not corrected.output.get("blocked"):
+        return StageResult(output={**dict(corrected.output), "reig_audit": audit},
+                           evidence_refs=corrected.evidence_refs,
+                           verification_state=corrected.verification_state,
+                           limitation=corrected.limitation)
+    return corrected
 
 
 def final_reread(context: Mapping[str, Any]) -> StageResult:
