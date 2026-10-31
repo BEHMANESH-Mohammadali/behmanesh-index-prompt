@@ -45,7 +45,8 @@ def test_v35_score_accepts_explicit_assessment():
     assert body["engine_version"] == "3.5.0-explicit-input"
     assert body["BSI"]["BSI_score"] < 80
     assert body["EIG"]["penalty_formula"] == "EIG_avg / 20"
-    assert "ECC_Total" not in body["ECC"]
+    assert body["ECC"]["ECC_Total"] == 20
+    assert body["ECC"]["aggregate_formula"] == "mean(abs(EG), abs(MG), abs(LG))"
     assert body["REIG"]["REIG_Total"] == 2
 
 
@@ -59,8 +60,6 @@ def test_v35_score_rejects_missing_d2():
             "calculation_mode": "linear",
             "content_scope": "single_content",
             "d2_assessment_basis": "internal_coherence_only",
-        "content_scope": "single_content",
-        "d2_assessment_basis": "internal_coherence_only",
             "ecc": {
                 "claimed_confidence": 80,
                 "supported_evidence": 60,

@@ -5,9 +5,11 @@ on:
     branches:
       - "migration/**"
       - "feat/bsi-v3.5-scoring-engine"
+      - "feat/model-agnostic-execution-adapters"
   pull_request:
     branches:
       - main
+      - "feat/bsi-v3.5-scoring-engine"
   workflow_dispatch:
 
 permissions:
