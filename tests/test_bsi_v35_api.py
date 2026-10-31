@@ -72,3 +72,49 @@ def test_v35_score_rejects_missing_d2():
     }
     response = client.post("/bsi/score", json=payload)
     assert response.status_code == 422
+
+
+
+def test_mcp_manifest_advertises_v35_explicit_assessment_contract():
+    response = client.get("/mcp")
+    assert response.status_code == 200
+    tool = response.json()["tools"][0]
+    assert "assessment" in tool["input_schema"]["required"]
+
+
+def test_mcp_rejects_legacy_raw_text_only_scoring():
+    response = client.post("/mcp/call", json={
+        "tool": "analyze_with_bsi",
+        "params": {"text": "A sufficiently long input text for the API."},
+    })
+    assert response.status_code == 200
+    assert response.json()["error"]["code"] == "MISSING_V35_ASSESSMENT"
+
+
+def test_mcp_uses_v35_runtime_for_explicit_assessment():
+    assessment = {
+        "dimension_scores": {f"D{i}": 80 for i in range(1, 8)},
+        "eig_gaps": {"MCG": 2, "CEG": 4, "FCG": 2, "LCG": 6},
+        "lcg_interpretation": "Rupture",
+        "calculation_mode": "linear",
+        "content_scope": "single_content",
+        "d2_assessment_basis": "internal_coherence_only",
+        "ecc": {
+            "claimed_confidence": 80,
+            "supported_evidence": 60,
+            "supported_method": 70,
+            "supported_conclusion": 50,
+        },
+        "reig": {"ERG": 0, "MRG": 1, "CRG": 2, "ARG": 3, "FRG": 4},
+    }
+    response = client.post("/mcp/call", json={
+        "tool": "analyze_with_bsi",
+        "params": {
+            "text": "A sufficiently long input text for the API.",
+            "assessment": assessment,
+        },
+    })
+    assert response.status_code == 200
+    result = response.json()["result"]
+    assert result["engine_version"] == "3.5.0-explicit-input"
+    assert result["D2_assessment_basis"] == "internal_coherence_only"
