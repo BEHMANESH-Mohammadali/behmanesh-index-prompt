@@ -15,7 +15,7 @@ The existing `core/bsi_engine.py`, pipeline, API wiring, prompt, ontology, and o
 - Official BSI dimension weights D1-D7: 0.22, 0.18, 0.18, 0.17, 0.12, 0.08, 0.05.
 - Official EIG gap weights: MCG 0.30, CEG 0.35, FCG 0.15, LCG 0.20.
 - EIG's Evolution/Rupture/Unknown distinction, including documented LCG adjustments (0.50 / 1.00 / 0.75).
-- User's previously recorded EIG penalty decision dated 2026-10-03: `EIG_penalty = EIG_avg / 20`, which caps the penalty at 0.5. This differs from the current canonical matrix's `EIG_avg / 10` and is intentionally made explicit in code rather than silently overwriting either record.
+- User's previously recorded EIG penalty decision dated 2026-10-03: `EIG_penalty = EIG_avg / 20`, which caps the penalty at 0.5. The owner confirmed this mapping on 2026-10-31. The canonicalization matrix is updated on this branch to use `/20`; maximum penalty is 0.5.
 - Official linear and nonlinear equations.
 - Official five-dimension REIG aggregate where all five dimensions are provided.
 
@@ -29,9 +29,9 @@ The existing `core/bsi_engine.py`, pipeline, API wiring, prompt, ontology, and o
 
 ## Known integration work still required
 
-1. Resolve the authoritative EIG penalty conflict: the user's 2026-10-03 decision says `/20`, while `docs/specification/CANONICAL_SPECIFICATION_MATRIX_v3.5.md` and `BSI_Calculation_Formula_Hybrid_v3x.md` currently say `/10`. Do not silently choose one for production integration.
+1. The EIG penalty decision is resolved for this upgrade: use `EIG_avg / 20`, confirmed by the owner on 2026-10-31. The older formula reference still needs reconciliation before production integration; the canonicalization matrix records the approved mapping on this branch.
 2. Resolve ECC aggregation authority by reviewing the complete SOP and architectural invariants alongside ECC v2.0.
-3. Single-content D2 handling is now explicit: assess internal coherence only, do not infer longitudinal trajectory, and do not treat unavailable longitudinal evidence as a defect. The D2 score must still be evidence-backed; no automatic imputation or weight renormalization is performed.
+3. Single-content D2 handling is resolved by the owner: assess internal coherence only, do not infer longitudinal trajectory, and do not treat unavailable longitudinal evidence as a defect. The D2 score must still be evidence-backed; no automatic imputation or weight renormalization is performed.
 4. Decide an authoritative nonlinear-selection rule or keep mode explicit at the caller.
 5. Review the new module against the entire canonical output contract, engine/pipeline/API call paths, and existing regression suite before wiring it into production.
 6. Run CI / unit tests in the repository environment and inspect diff, status, and regression results before proposing a merge.
