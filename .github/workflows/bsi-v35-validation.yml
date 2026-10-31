@@ -23,7 +23,7 @@ jobs:
           python-version: "3.12"
           cache: pip
       - name: Install test dependencies
-        run: python -m pip install --upgrade pip pytest fastapi uvicorn
+        run: python -m pip install --upgrade pip pytest fastapi uvicorn requests
       - name: Compile Python modules
         run: python -m compileall -q api core
       - name: Run repository test suite
