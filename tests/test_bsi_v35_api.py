@@ -28,6 +28,10 @@ def test_v35_score_accepts_explicit_assessment():
             "eig_gaps": {"MCG": 2, "CEG": 4, "FCG": 2, "LCG": 6},
             "lcg_interpretation": "Rupture",
             "calculation_mode": "linear",
+            "content_scope": "single_content",
+            "d2_assessment_basis": "internal_coherence_only",
+        "content_scope": "single_content",
+        "d2_assessment_basis": "internal_coherence_only",
             "ecc": {
                 "claimed_confidence": 80,
                 "supported_evidence": 60,
@@ -55,6 +59,10 @@ def test_v35_score_rejects_missing_d2():
             "eig_gaps": {"MCG": 2, "CEG": 4, "FCG": 2, "LCG": 6},
             "lcg_interpretation": "Rupture",
             "calculation_mode": "linear",
+            "content_scope": "single_content",
+            "d2_assessment_basis": "internal_coherence_only",
+        "content_scope": "single_content",
+        "d2_assessment_basis": "internal_coherence_only",
             "ecc": {
                 "claimed_confidence": 80,
                 "supported_evidence": 60,
