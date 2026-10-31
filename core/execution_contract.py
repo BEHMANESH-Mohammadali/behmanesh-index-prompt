@@ -31,6 +31,7 @@ MANDATORY_STAGES = (
     "reig_draft_audit",
     "correction_and_reanalysis",
     "final_reread",
+    "execution_status",
 )
 
 
