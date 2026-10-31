@@ -107,6 +107,8 @@ def test_runtime_integrates_all_scoring_stages():
         "eig_gaps": {"MCG": 2, "CEG": 4, "FCG": 2, "LCG": 6},
         "lcg_interpretation": "Rupture",
         "calculation_mode": "linear",
+        "content_scope": "single_content",
+        "d2_assessment_basis": "internal_coherence_only",
         "ecc": {
             "claimed_confidence": 80,
             "supported_evidence": 60,
@@ -124,3 +126,18 @@ def test_runtime_integrates_all_scoring_stages():
 def test_runtime_rejects_missing_assessment_fields():
     with pytest.raises(ScoringInputError, match="Missing assessment fields"):
         run_v35_scoring({"dimension_scores": {}})
+
+
+def test_runtime_rejects_longitudinal_basis_for_single_content():
+    assessment = {
+        "dimension_scores": {f"D{i}": 80 for i in range(1, 8)},
+        "eig_gaps": {"MCG": 2, "CEG": 4, "FCG": 2, "LCG": 6},
+        "lcg_interpretation": "Rupture",
+        "calculation_mode": "linear",
+        "content_scope": "single_content",
+        "d2_assessment_basis": "longitudinal_evidence",
+        "ecc": {"claimed_confidence": 80, "supported_evidence": 60, "supported_method": 70, "supported_conclusion": 50},
+        "reig": {"ERG": 0, "MRG": 1, "CRG": 2, "ARG": 3, "FRG": 4},
+    }
+    with pytest.raises(ScoringInputError, match="D2 assessment basis"):
+        run_v35_scoring(assessment)
