@@ -70,16 +70,25 @@ def score(payload: dict):
 @router.post("/analyze")
 def analyze(payload: dict):
     text = payload.get("text", "")
+    assessment = payload.get("assessment")
     if len(text) < 10:
         return {"error": {"code": "TEXT_TOO_SHORT", "message": "Minimum length is 10"}}
-    result = compute_bsi(text)
-    details = result.get("details", {})
-    response = run_pipeline(text, details)
-    response["framework_version"] = FRAMEWORK_VERSION
-    response["engine_version"] = LEGACY_ENGINE_VERSION
-    response["engine_status"] = ENGINE_STATUS
-    response["version_warning"] = "This analysis uses the legacy v3.4.1 engine and is not a BSI v3.5 execution."
-    return response
+    if not isinstance(assessment, dict):
+        from fastapi import HTTPException
+        raise HTTPException(status_code=422, detail={
+            "code": "MISSING_V35_ASSESSMENT",
+            "message": "Provide explicit evidence-backed assessments; raw text is not heuristically scored.",
+        })
+    try:
+        result = run_v35_scoring(assessment)
+    except ScoringInputError as exc:
+        from fastapi import HTTPException
+        raise HTTPException(status_code=422, detail={
+            "code": "INVALID_V35_ASSESSMENT", "message": str(exc)
+        }) from exc
+    result["timestamp"] = datetime.utcnow().isoformat()
+    result["input_text_length"] = len(text)
+    return result
 
 
 @router.post("/compare")
