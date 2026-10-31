@@ -43,7 +43,10 @@ class OllamaChatAdapter:
                 {"role": "user", "content": request.input_text},
             ],
             "options": {"temperature": request.temperature},
+
         }
+        if request.max_output_tokens is not None:
+            body["options"]["num_predict"] = request.max_output_tokens
         if request.output_schema is not None and self.capabilities.structured_output:
             body["format"] = dict(request.output_schema)
         http_request = Request(
