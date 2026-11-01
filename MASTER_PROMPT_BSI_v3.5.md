@@ -132,6 +132,22 @@ Efficiency must never become premature termination.
 
 ## 3A. Single-Input Coherence Path
 
+### D2-SI Numeric Scoring for a Single Content Item
+
+When only one content item is available and a numeric D2 result is required, apply the constrained `D2-SI v0.1` operationalization documented in `BSI_Calculation_Formula_Hybrid_v3x.md`:
+
+```
+D2-SI = 0.40 × Internal_Structural_Coherence
+      + 0.30 × Contradiction_Resolution_Rate
+      + 0.20 × Stable_Nodes_Consistency
+      + 0.10 × Theme_Evolution
+```
+
+Score each applicable dimension from 0 to 4. The weighted sum is already on the 0–4 scale; do not divide it by 4. If a dimension is genuinely not applicable, state why and divide the weighted sum of applicable dimensions by the sum of their applicable weights. Never use N/A to conceal weak performance. Preserve the three original non-temporal D2 subcriteria and replace only the unavailable `Trajectory_Stability` component for this single-input path. `Theme_Evolution` means development within the supplied content, not historical evolution across time. Missing longitudinal evidence is not itself a defect.
+
+The canonical D2 criterion and its 0.18 BSI weight remain unchanged. Label the result `D2-SI`, not an unqualified longitudinal D2 score. If expressing its contribution in a 0–100 total, use `(D2-SI / 4) × 18` only where the canonical total uses normalized criterion scores; this instruction does not redefine the overall BSI aggregation.
+
+
 When the analyzed input is a single article, paper, essay, post, document, or other standalone intellectual content unit, apply the following operational coherence path where the structure of the source makes the components applicable.
 
 This is an **execution mechanism**, not an additional BSI criterion, scoring dimension, or replacement for any official BSI criterion.
