@@ -160,6 +160,16 @@ Do not use N/A to hide weak performance. Report raw scores, applicability, any r
 
 **Overlap control:** Assign an observed problem to the dimension that most directly captures it. For example, a conclusion unsupported by its premises primarily affects Internal Structural Coherence; disconnected stages or unexplained conceptual shifts affect Developmental Consistency; invalid generalization across contexts affects Cross-Context Transfer; and limitations or counterevidence acknowledged but ignored in the conclusion affect Reflective Integration. Do not penalize the same underlying error in multiple dimensions unless distinct evidence supports each penalty.
 
+
+
+### D2-SI Implementation and Aggregation Boundary
+
+The deterministic scoring module exposes `calculate_d2_si()` for the proposed 0–4 D2-SI arithmetic and `d2_si_to_normalized_score()` for the explicit scale conversion `(D2-SI / 4) × 100`. The converted value may be supplied as the D2 input to the existing BSI aggregator, which retains the official D2 weight of 0.18. This is a scale bridge, not a change to canonical longitudinal D2 or BIO v1.0. Non-calculated states (including N/A-only NOT_SCORABLE, INSUFFICIENT_EVIDENCE, and NOT_ASSESSED) cannot be converted into a numeric D2 score.
+
+The helper validates numeric ranges, state labels, applicability, and arithmetic. It does not independently verify textual evidence, select anchors, adjudicate evaluators, or determine whether multiple penalties are justified. Those remain evidence-layer responsibilities and must be documented in the assessment record. In particular, the same underlying defect must not be counted in multiple dimensions without distinct evidence for each asserted failure.
+
+**Validation status:** unit tests cover weighted arithmetic, N/A renormalization, non-score states, invalid inputs, scale conversion, and preservation of the official 0.18 D2 aggregation weight. Test execution and inter-rater calibration are separate validation steps; passing arithmetic tests alone does not establish anchor reliability or evaluator agreement.
+
 ### D2-SI Behavioral Scoring Anchors (0–4)
 
 Apply the following observable anchors independently to each D2-SI dimension. Scores must be supported by identifiable evidence in the analyzed content; writing polish, topic importance, and agreement with the author are not substitutes for structural evidence.
