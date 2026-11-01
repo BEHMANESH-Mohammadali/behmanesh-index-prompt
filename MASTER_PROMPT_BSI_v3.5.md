@@ -5508,3 +5508,6 @@ This Master Prompt is the complete portable execution artifact. A model may exec
 A model must not report a failed API call, missing adapter, absent Ollama configuration, unavailable repository path, or missing prompt package as a blocker to prompt-only execution. Those are runtime integration limitations only. Conversely, the model must not claim to have executed software-only checks, persisted traces, or independently validated sources when it has not.
 
 **Canonical execution modes:** (A) PROMPT-ONLY — direct execution in any capable LLM; (B) PROMPT + OPTIONAL TOOLS — direct execution with available retrieval/computation tools; (C) OPTIONAL RUNTIME — automated provider/API execution. All three preserve the same BSI Knowledge Core and analytical contract.
+
+
+**Double-penalty traceability control:** the implementation also exposes `validate_d2_si_penalty_attribution()`. If one defect identifier is assigned to multiple dimensions, each cross-dimension entry must cite a distinct evidence identifier and its own rationale. This is a mechanical traceability check only; it cannot determine whether the evidence semantically proves distinct failures. Human/evaluator adjudication remains required.
