@@ -212,3 +212,77 @@ def calculate_reig(scores: Mapping[str, int]) -> dict:
         "REIG_Total": round(total, 4),
         "scale": "0-4",
     }
+
+
+D2_SI_WEIGHTS = {"I": 0.40, "D": 0.30, "C": 0.20, "R": 0.10}
+D2_SI_NON_SCORE_STATES = {"N/A", "INSUFFICIENT_EVIDENCE", "NOT_ASSESSED"}
+
+
+def calculate_d2_si(scores: Mapping[str, object]) -> dict:
+    """Calculate the proposed single-input D2-SI operationalization.
+
+    Values for I/D/C/R must be numeric 0..4 or one of the explicit states
+    N/A, INSUFFICIENT_EVIDENCE, NOT_ASSESSED. This arithmetic helper cannot
+    validate the quality of textual evidence; evidence binding remains the
+    responsibility of the assessment layer. Canonical longitudinal D2 is
+    not calculated or replaced here.
+    """
+    missing = set(D2_SI_WEIGHTS) - set(scores)
+    extra = set(scores) - set(D2_SI_WEIGHTS)
+    if missing or extra:
+        raise ScoringInputError(
+            f"D2-SI scores must contain exactly {tuple(D2_SI_WEIGHTS)}; "
+            f"missing={sorted(missing)}, extra={sorted(extra)}"
+        )
+
+    checked = {}
+    applicable = {}
+    for key, weight in D2_SI_WEIGHTS.items():
+        value = scores[key]
+        if isinstance(value, str):
+            state = value.strip().upper()
+            if state not in D2_SI_NON_SCORE_STATES:
+                raise ScoringInputError(f"Invalid D2-SI state for {key}: {value!r}.")
+            checked[key] = state
+            applicable[key] = state != "N/A"
+        else:
+            checked[key] = _bounded_number(value, f"D2-SI {key}", 0, 4)
+            applicable[key] = True
+
+    if not any(applicable.values()):
+        return {
+            "status": "NOT_SCORABLE",
+            "D2-SI": None,
+            "dimension_scores": checked,
+            "applicable_weights": {},
+            "renormalized": False,
+        }
+
+    unresolved = [
+        key for key, value in checked.items()
+        if value in {"INSUFFICIENT_EVIDENCE", "NOT_ASSESSED"}
+    ]
+    if unresolved:
+        state = "INSUFFICIENT_EVIDENCE" if "INSUFFICIENT_EVIDENCE" in [checked[k] for k in unresolved] else "NOT_ASSESSED"
+        return {
+            "status": state,
+            "D2-SI": None,
+            "dimension_scores": checked,
+            "applicable_weights": {k: w for k, w in D2_SI_WEIGHTS.items() if applicable[k]},
+            "renormalized": any(not applicable[k] for k in D2_SI_WEIGHTS),
+            "unresolved_dimensions": unresolved,
+        }
+
+    active_weights = {k: w for k, w in D2_SI_WEIGHTS.items() if applicable[k]}
+    denominator = sum(active_weights.values())
+    score = sum(active_weights[k] * float(checked[k]) for k in active_weights) / denominator
+    return {
+        "status": "CALCULATED",
+        "D2-SI": round(score, 6),
+        "dimension_scores": checked,
+        "applicable_weights": active_weights,
+        "renormalized": len(active_weights) != len(D2_SI_WEIGHTS),
+        "weight_denominator": round(denominator, 6),
+        "scale": "0-4",
+        "canonical_D2_modified": False,
+    }
