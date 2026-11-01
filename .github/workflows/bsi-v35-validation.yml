@@ -6,6 +6,7 @@ on:
       - "migration/**"
       - "feat/bsi-v3.5-scoring-engine"
       - "feat/model-agnostic-execution-adapters"
+      - "feat/d2-single-input-scoring"
   pull_request:
     branches:
       - main
