@@ -281,7 +281,7 @@ def test_runtime_integrates_optional_d2_si_and_checks_normalized_d2():
 
 def test_runtime_rejects_mismatch_between_d2_si_and_d2_engine_input():
     assessment = _valid_runtime_assessment()
-    assessment["dimension_scores"]["D2"] = 80
+    assessment["dimension_scores"]["D2"] = 79
     with pytest.raises(ScoringInputError, match="normalized D2-SI"):
         run_v35_scoring(assessment)
 
