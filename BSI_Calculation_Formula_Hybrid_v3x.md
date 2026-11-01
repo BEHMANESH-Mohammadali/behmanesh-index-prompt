@@ -407,3 +407,6 @@ D7 = 0.50 × Claim_Classification_Purity
 
 
 **Double-penalty traceability control:** the implementation also exposes `validate_d2_si_penalty_attribution()`. If one defect identifier is assigned to multiple dimensions, each cross-dimension entry must cite a distinct evidence identifier and its own rationale. This is a mechanical traceability check only; it cannot determine whether the evidence semantically proves distinct failures. Human/evaluator adjudication remains required.
+
+
+**Runtime integration:** `run_v35_scoring()` accepts optional `d2_si_scores` for `single_content` only. When supplied, it calculates D2-SI, normalizes it to the 0–100 engine scale, and requires the supplied `dimension_scores["D2"]` to match. It returns the D2-SI assessment separately. The optional field is rejected for `longitudinal_corpus`; the canonical longitudinal D2 path remains distinct. Existing callers that omit `d2_si_scores` retain the prior explicit-input contract.
