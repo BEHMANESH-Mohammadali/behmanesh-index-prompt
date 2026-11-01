@@ -300,3 +300,41 @@ def d2_si_to_normalized_score(d2_si_result: Mapping[str, object]) -> float:
         raise ScoringInputError("D2-SI must have CALCULATED status before normalization.")
     value = _bounded_number(d2_si_result.get("D2-SI"), "D2-SI", 0, 4)
     return round((value / 4.0) * 100.0, 6)
+
+
+
+def validate_d2_si_penalty_attribution(records: Sequence[Mapping[str, str]]) -> dict:
+    """Audit whether a single identified defect is penalized across dimensions.
+
+    Reuse of one defect_id across multiple D2-SI dimensions is accepted only
+    when each dimension entry cites a distinct evidence_id and supplies its
+    own non-empty rationale. This is a traceability guard, not a semantic
+    judgment that the cited evidence truly establishes distinct failures.
+    """
+    allowed = set(D2_SI_WEIGHTS)
+    normalized = []
+    for index, record in enumerate(records):
+        if not isinstance(record, Mapping):
+            raise ScoringInputError(f"Penalty record {index} must be a mapping.")
+        required = {"defect_id", "dimension", "evidence_id", "rationale"}
+        if required - set(record):
+            raise ScoringInputError(f"Penalty record {index} is missing required fields.")
+        item = {key: str(record[key]).strip() for key in required}
+        if not all(item.values()):
+            raise ScoringInputError(f"Penalty record {index} contains an empty required field.")
+        if item["dimension"] not in allowed:
+            raise ScoringInputError(f"Invalid D2-SI dimension in penalty record {index}.")
+        normalized.append(item)
+
+    by_defect = {}
+    for item in normalized:
+        by_defect.setdefault(item["defect_id"], []).append(item)
+    for defect_id, items in by_defect.items():
+        dimensions = {item["dimension"] for item in items}
+        if len(dimensions) > 1:
+            evidence_ids = [item["evidence_id"] for item in items]
+            if len(set(evidence_ids)) != len(evidence_ids):
+                raise ScoringInputError(
+                    f"Potential double penalty for {defect_id}: cross-dimension entries require distinct evidence_id values."
+                )
+    return {"status": "TRACEABILITY_CHECK_PASSED", "records_checked": len(normalized)}
