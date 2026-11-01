@@ -6,6 +6,7 @@ from core.bsi_scoring_v35 import (
     ScoringInputError,
     calculate_bsi,
     calculate_d2_si,
+    d2_si_to_normalized_score,
     calculate_ecc_gaps,
     calculate_eig,
     calculate_reig,
@@ -203,3 +204,25 @@ def test_d2_si_rejects_invalid_score_and_state():
         calculate_d2_si({"I": 5, "D": 3, "C": 2, "R": 1})
     with pytest.raises(ScoringInputError):
         calculate_d2_si({"I": "UNKNOWN", "D": 3, "C": 2, "R": 1})
+
+
+
+def test_d2_si_normalization_maps_zero_to_four_onto_engine_scale():
+    assert d2_si_to_normalized_score({"status": "CALCULATED", "D2-SI": 0}) == 0
+    assert d2_si_to_normalized_score({"status": "CALCULATED", "D2-SI": 2}) == 50
+    assert d2_si_to_normalized_score({"status": "CALCULATED", "D2-SI": 4}) == 100
+
+
+def test_d2_si_normalization_rejects_non_calculated_state():
+    with pytest.raises(ScoringInputError, match="CALCULATED"):
+        d2_si_to_normalized_score({"status": "INSUFFICIENT_EVIDENCE", "D2-SI": None})
+
+
+def test_normalized_d2_si_flows_through_unchanged_official_d2_weight():
+    d2_result = calculate_d2_si({"I": 4, "D": 4, "C": 4, "R": 4})
+    d2_normalized = d2_si_to_normalized_score(d2_result)
+    scores = {key: 0 for key in BSI_WEIGHTS}
+    scores["D2"] = d2_normalized
+    result = calculate_bsi(scores, 0, calculation_mode="linear")
+    assert result["weighted_base_score"] == pytest.approx(18)
+    assert result["dimension_weights"]["D2"] == pytest.approx(0.18)
