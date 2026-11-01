@@ -203,6 +203,87 @@ N/A must not conceal weak performance. Report raw scores, applicability, any ren
 
 **Overlap control:** Assign each observed problem to the dimension that most directly captures it. An unsupported conclusion primarily affects Internal Structural Coherence; disconnected stages or unexplained conceptual shifts affect Developmental Consistency; invalid cross-context generalization affects Cross-Context Transfer; and limitations or counterevidence acknowledged but ignored in the conclusion affect Reflective Integration. Do not penalize one underlying error multiple times unless distinct evidence supports each penalty.
 
+### D2-SI Behavioral Scoring Anchors (0–4)
+
+Apply the following observable anchors independently to each D2-SI dimension. Scores must be supported by identifiable evidence in the analyzed content; writing polish, topic importance, and agreement with the author are not substitutes for structural evidence.
+
+#### Shared scale semantics
+
+| Score | Behavioral anchor | Interpretation |
+|---:|---|---|
+| 0 | Demonstrable fundamental failure in the applicable dimension; the expected structure is absent or materially invalidated. | Use only when sufficient evidence establishes failure; never use for missing information. |
+| 1 | Very weak performance; limited positive evidence is outweighed by major, pervasive, or unresolved defects. | Major deficiencies dominate. |
+| 2 | Partial/basic performance; the dimension is recognizably present, but material gaps or discontinuities remain. | A genuine intermediate level, not a default score. |
+| 3 | Strong performance; the dimension is substantially coherent and defensible, with limited non-fundamental deficiencies. | Remaining defects do not materially undermine the dimension. |
+| 4 | Very strong and integrated performance throughout the relevant content; no material unresolved defect in this dimension is evidenced. | Requires positive evidence of strong performance; absence of detected errors alone is insufficient. |
+
+A score of 0 is not equivalent to insufficient evidence. If the dimension is applicable but cannot be assessed defensibly, use INSUFFICIENT_EVIDENCE rather than 0. A score of 4 does not claim absolute perfection; it describes performance within the scope and evidence of the assessed content.
+
+#### Dimension-specific anchors
+
+**Internal Structural Coherence (I) — weight 0.40**
+
+| Score | Anchor |
+|---:|---|
+| 0 | A fundamental break among the problem, claims, reasoning, and conclusion, or an unresolved central contradiction invalidates the conclusion. |
+| 1 | Inferential links are predominantly weak; multiple major unsupported claims or inferential jumps occur. |
+| 2 | The overall argument is identifiable, but important links are incomplete and some conclusions exceed their support. |
+| 3 | Problem, premises, evidence, reasoning, and conclusions are largely aligned; inferential gaps are limited and material contradictions are absent or resolved. |
+| 4 | The reasoning chain is explicit and continuous; central claims have proportionate support, transitions are defensible, and conclusions remain within the evidence. |
+
+**Developmental Consistency (D) — weight 0.30**
+
+| Score | Anchor |
+|---:|---|
+| 0 | The content is fundamentally fragmented; central conceptual shifts occur without a connecting rationale. |
+| 1 | Stages are mostly juxtaposed rather than developed from one another; major discontinuities are frequent. |
+| 2 | Some stages connect and develop, but important parts of the argument stall or remain discontinuous. |
+| 3 | Stages generally build on one another; refinements and revisions are traceable, with only limited unexplained gaps. |
+| 4 | The internal progression is clear; each stage extends, sharpens, or justifiably revises prior reasoning, producing coherent argumentative development. |
+
+This dimension concerns development within the single content item, not historical change across time.
+
+**Cross-Context Transfer (C) — weight 0.20**
+
+| Score | Anchor |
+|---:|---|
+| 0 | A central transfer is demonstrably invalid; decisive contextual differences are ignored and the main conclusion depends on it. |
+| 1 | Transfers rely mainly on superficial similarities; important differences or validity conditions are not examined. |
+| 2 | Some transfers have a defensible basis, but comparison, contextual differences, or limits of generalization are incompletely handled. |
+| 3 | Transfers are generally valid; relevant similarities and differences are considered and generalizations mostly remain within defensible bounds. |
+| 4 | Transfers have an explicit and rigorous basis; relevant equivalences and decisive differences are identified, boundary conditions are preserved, and validity limits are clear. |
+
+The number of domains or examples is not itself evidence of transfer quality. If no meaningful transfer opportunity exists, mark N/A with a rationale; do not use N/A when an attempted transfer is weak or invalid.
+
+**Reflective Integration (R) — weight 0.10**
+
+| Score | Anchor |
+|---:|---|
+| 0 | Decisive counterevidence or limitations are ignored or distorted, while the conclusion is maintained despite the unresolved conflict. |
+| 1 | Reflection is absent or largely performative; acknowledged limitations or counterevidence have no meaningful effect on the reasoning. |
+| 2 | Some assumptions or limitations are identified, but their integration into reasoning and conclusions is incomplete or uneven. |
+| 3 | Important limitations and counterevidence are examined and meaningfully inform qualification of some claims or conclusions; omissions are limited. |
+| 4 | Assumptions, limitations, and counterevidence are actively evaluated; their effects on claim scope, confidence, and conclusions are explicit, and justified revisions are integrated. |
+
+#### Non-score assessment states
+
+| State | Meaning | Required handling |
+|---|---|---|
+| N/A | The dimension is genuinely inapplicable or no relevant assessment opportunity exists in the content. | Exclude its weight from the denominator, explain why, and renormalize across applicable dimensions. |
+| INSUFFICIENT_EVIDENCE | The dimension is applicable, but available evidence is insufficient for a defensible score. | Do not assign a numeric score; identify what evidence is missing. |
+| NOT_ASSESSED | The dimension has not been evaluated. | Do not treat as N/A or as zero. |
+| NOT_SCORABLE | No dimension can be defensibly scored. | Do not report a numeric D2-SI. |
+| 0 | Sufficient evidence demonstrates fundamental failure in that dimension. | Provide the specific supporting evidence. |
+
+#### Evidence record and adjudication
+
+For each dimension, record: raw score (or non-score state), applicability, specific textual evidence or location, rationale for the selected anchor, material counterevidence or defect, and evaluator confidence. When evaluators disagree, resolve the disagreement by comparing evidence and anchor interpretation; do not automatically average their scores. The final adjudicated score and its rationale must be recorded.
+
+#### Boundary and overlap controls
+
+A change of position is not automatically a contradiction; a reasoned revision may support Developmental Consistency. Cross-context quality is not measured by domain count. A statement of humility alone does not establish Reflective Integration. Assign each defect to the dimension that most directly captures it; apply multiple penalties only where distinct evidence establishes distinct failures. Missing information must not be converted into a score of 0.
+
+
 **Scope and provenance:** This proposed 0.40/0.30/0.20/0.10 decomposition is not BIO v1.0's canonical longitudinal subcriterion formula. It does not change D2's official weight of 0.18. Label the result D2-SI, never as proof of longitudinal continuity, stability, persistence, or historical development. Missing longitudinal evidence is not itself a defect. The conversion `(D2-SI / 4) × 18` is valid only if the canonical aggregate normalizes criterion scores before aggregation; it does not define the full BSI aggregation.
 
 `D2 = 0.40 × Trajectory_Stability
