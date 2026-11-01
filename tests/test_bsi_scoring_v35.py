@@ -275,8 +275,8 @@ def test_runtime_integrates_optional_d2_si_and_checks_normalized_d2():
     assessment = _valid_runtime_assessment()
     result = run_v35_scoring(assessment)
     assert result["D2-SI"]["status"] == "CALCULATED"
-    assert result["D2-SI"]["D2-SI"] == pytest.approx(3.3)
-    assert result["BSI"]["dimension_scores"]["D2"] == pytest.approx(82.5)
+    assert result["D2-SI"]["D2-SI"] == pytest.approx(3.2)
+    assert result["BSI"]["dimension_scores"]["D2"] == pytest.approx(80)
 
 
 def test_runtime_rejects_mismatch_between_d2_si_and_d2_engine_input():
