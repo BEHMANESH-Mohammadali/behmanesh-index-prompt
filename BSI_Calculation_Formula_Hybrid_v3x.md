@@ -119,6 +119,40 @@ D2 = 0.40 × Trajectory_Stability
 
 ---
 
+
+
+### D2-SI — Single-Input Scoring Operationalization (Proposed v0.1)
+
+**Status:** Explicit single-input scoring path; does not replace the canonical longitudinal D2 formula. The canonical D2 criterion and its BSI weight remain unchanged at 0.18.
+
+When only one content item is available, `Trajectory_Stability` cannot be validly scored because it requires evidence across time. Do not infer a trajectory or treat missing longitudinal evidence as a defect. For a numeric single-input score, use the following constrained operationalization: replace only the unavailable temporal subcriterion with `Internal_Structural_Coherence`; preserve the other three canonical subcriteria and their relative weights.
+
+| D2-SI subcriterion | Weight | Single-input operational definition |
+|---|---:|---|
+| Internal_Structural_Coherence | 0.40 | Logical fit among problem/premises, claims, reasoning, evidence, conclusions, and stated limitations; assess whether conclusions follow from the content's own support. |
+| Contradiction_Resolution_Rate | 0.30 | How well apparent contradictions within the same content are identified, reconciled, or explicitly bounded; do not assume a contradiction is resolved merely because it is unmentioned. |
+| Stable_Nodes_Consistency | 0.20 | Consistency of recurring concepts, definitions, assumptions, and inferential nodes across sections of the same content. |
+| Theme_Evolution | 0.10 | Coherent development of themes or claims within the content, including justified refinement; this is within-content development, not evidence of change across historical time. |
+
+```
+D2-SI = 0.40 × Internal_Structural_Coherence
+      + 0.30 × Contradiction_Resolution_Rate
+      + 0.20 × Stable_Nodes_Consistency
+      + 0.10 × Theme_Evolution
+```
+
+Each applicable subcriterion is scored from 0 to 4 using the existing BSI scoring scale. With all four dimensions applicable, the weights sum to 1.00 and D2-SI is therefore directly reported on a 0–4 scale; **do not divide this weighted sum by 4**. If a subcriterion is genuinely not applicable because of content genre or evidence structure, document the reason and renormalize only across applicable dimensions:
+
+```
+D2-SI = Σ(weight_i × score_i) / Σ(weight_i for applicable dimensions)
+```
+
+Do not mark a dimension N/A solely because the content performs poorly or omits an expected argument component when that component is relevant to its genre and claims. Report the applicable dimensions, raw scores, normalized weights (if any), and rationale for every N/A. If no defensible dimension can be scored, report D2-SI as not scorable rather than fabricating a number.
+
+For contribution to a 0–100 BSI total, if and only if the canonical aggregate uses normalized criterion scores, the D2 contribution is `(D2-SI / 4) × 18` points. This conversion does not define or replace the full BSI aggregation formula.
+
+**Provenance boundary:** The 0.40/0.30/0.20/0.10 decomposition is an operationalization documented here, not a subcriterion weighting directly specified by BIO v1.0. D2-SI is a single-input path and must be labeled as such; it must not be reported as longitudinal evidence or silently substituted for multi-input D2.
+
 ### D3 — AuthenticEthicalLayer (وزن: 0.18)
 
 **تعریف:** D3 در معنای ریشه‌ای v3.3، اصالت لایه اخلاقی انسانی را همراه با قدرت راستی‌آزمایی، صداقت معرفتی و تعهد به حقیقت می‌سنجد. بنابراین D3 صرفاً شاخص «اخلاق‌گرایی» یا «غیراخلاقی‌نبودن» نیست و صرفاً معادل Anti-Performative نیز نیست.
