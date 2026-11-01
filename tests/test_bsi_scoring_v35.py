@@ -7,6 +7,7 @@ from core.bsi_scoring_v35 import (
     calculate_bsi,
     calculate_d2_si,
     d2_si_to_normalized_score,
+    validate_d2_si_penalty_attribution,
     calculate_ecc_gaps,
     calculate_eig,
     calculate_reig,
@@ -226,3 +227,30 @@ def test_normalized_d2_si_flows_through_unchanged_official_d2_weight():
     result = calculate_bsi(scores, 0, calculation_mode="linear")
     assert result["weighted_base_score"] == pytest.approx(18)
     assert result["dimension_weights"]["D2"] == pytest.approx(0.18)
+
+
+
+def test_d2_si_penalty_attribution_rejects_same_evidence_double_count():
+    records = [
+        {"defect_id": "gap-1", "dimension": "I", "evidence_id": "para-4", "rationale": "Unsupported inference"},
+        {"defect_id": "gap-1", "dimension": "R", "evidence_id": "para-4", "rationale": "Ignored limitation"},
+    ]
+    with pytest.raises(ScoringInputError, match="double penalty"):
+        validate_d2_si_penalty_attribution(records)
+
+
+def test_d2_si_penalty_attribution_accepts_distinct_evidence_and_rationales():
+    records = [
+        {"defect_id": "gap-1", "dimension": "I", "evidence_id": "para-4", "rationale": "Unsupported inference"},
+        {"defect_id": "gap-1", "dimension": "R", "evidence_id": "para-9", "rationale": "Separate counterevidence ignored"},
+    ]
+    result = validate_d2_si_penalty_attribution(records)
+    assert result == {"status": "TRACEABILITY_CHECK_PASSED", "records_checked": 2}
+
+
+def test_d2_si_penalty_attribution_rejects_missing_rationale():
+    records = [
+        {"defect_id": "gap-1", "dimension": "I", "evidence_id": "para-4", "rationale": ""}
+    ]
+    with pytest.raises(ScoringInputError):
+        validate_d2_si_penalty_attribution(records)
