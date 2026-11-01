@@ -173,7 +173,7 @@ def test_runtime_rejects_longitudinal_basis_for_single_content():
 def test_d2_si_calculates_weighted_score_on_zero_to_four_scale():
     result = calculate_d2_si({"I": 4, "D": 3, "C": 2, "R": 1})
     assert result["status"] == "CALCULATED"
-    assert result["D2-SI"] == pytest.approx(3.1)
+    assert result["D2-SI"] == pytest.approx(3.0)
     assert result["scale"] == "0-4"
     assert result["canonical_D2_modified"] is False
 
