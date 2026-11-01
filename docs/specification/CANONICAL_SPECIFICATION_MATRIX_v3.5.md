@@ -175,23 +175,35 @@ If calculation mode cannot be established from the authoritative specification, 
 
 ### D2-SI — Single-Input Numeric Operationalization
 
-**Status:** Proposed constrained operationalization v0.1; the canonical D2 construct, canonical longitudinal formula, and criterion weight 0.18 remain unchanged.
+**Status:** Proposed constrained single-input operationalization v0.2. The canonical D2 construct, canonical longitudinal formula, and official criterion weight 0.18 remain unchanged.
 
-For one content item, `Trajectory_Stability` is unavailable as a temporal construct. A numeric single-input path may replace that component only with `Internal_Structural_Coherence`, retaining the other canonical subcriteria and their weights:
+A single input cannot establish temporal trajectory, longitudinal stability, persistence, continuity, or historical development. A numeric single-input result may be calculated using the four operational dimensions below. This is not a set of internal weights directly prescribed by BIO v1.0.
 
-| D2-SI subcriterion | Weight |
-|---|---:|
-| Internal_Structural_Coherence | 0.40 |
-| Contradiction_Resolution_Rate | 0.30 |
-| Stable_Nodes_Consistency | 0.20 |
-| Theme_Evolution (within-content only) | 0.10 |
+| D2-SI subcriterion | Weight | Operational definition |
+|---|---:|---|
+| Internal Structural Coherence | 0.40 | Logical and functional fit among the problem, premises, claims, concepts, evidence, reasoning, conclusions, and limitations; support for conclusions, defensible inference, proportional certainty, and unresolved contradictions. Difference or change is not automatically contradiction. |
+| Developmental Consistency | 0.30 | Whether successive stages of concepts and arguments within the same content build on, refine, or justifiably revise earlier stages, with connected intermediate conclusions rather than unexplained breaks or disconnected additions. Not historical development across time. |
+| Cross-Context Transfer | 0.20 | Validity of transferring concepts or principles across contexts, domains, or analytical levels; basis for transfer, relevant similarities and differences, preservation of meaning and boundary conditions, and whether analogies or generalizations exceed evidence. Domain count is not itself merit. |
+| Reflective Integration | 0.10 | Whether limitations, hidden assumptions, counterevidence, and revisions are integrated into reasoning and conclusions. Merely mentioning a limitation or saying “I may be wrong” is insufficient if it is ignored downstream. |
 
 ```
-D2-SI = 0.40 I + 0.30 C + 0.20 N + 0.10 T
+D2-SI = 0.40 × Internal_Structural_Coherence
+      + 0.30 × Developmental_Consistency
+      + 0.20 × Cross_Context_Transfer
+      + 0.10 × Reflective_Integration
 ```
 
-Each applicable score is 0–4. With all dimensions applicable, report the weighted sum directly on the 0–4 scale; do not divide by 4. For a genuinely N/A dimension, document the reason and renormalize by the sum of applicable weights. Missing longitudinal evidence is not a defect and must not be represented as temporal incoherence. The 0.40/0.30/0.20/0.10 decomposition is an operationalization, not a set of internal weights directly prescribed by BIO v1.0. Any conversion to a 0–100 BSI contribution must follow the canonical aggregate's score-normalization convention; `(D2-SI / 4) × 18` is valid only if criterion scores are normalized before aggregation.
+Each applicable dimension is scored from 0 to 4. With all dimensions applicable, report the weighted sum directly on the 0–4 scale; do not divide by 4. For a genuinely non-applicable dimension, state the reason and renormalize:
 
+```
+D2-SI = Σ(weight_i × score_i) / Σ(weight_i for applicable dimensions)
+```
+
+N/A must not conceal weak performance. Report raw scores, applicability, any renormalization, and the rationale for each N/A. If no dimension can be defensibly scored, report D2-SI as not scorable.
+
+**Overlap control:** Assign each observed problem to the dimension that most directly captures it. An unsupported conclusion primarily affects Internal Structural Coherence; disconnected stages or unexplained conceptual shifts affect Developmental Consistency; invalid cross-context generalization affects Cross-Context Transfer; and limitations or counterevidence acknowledged but ignored in the conclusion affect Reflective Integration. Do not penalize one underlying error multiple times unless distinct evidence supports each penalty.
+
+**Scope and provenance:** This proposed 0.40/0.30/0.20/0.10 decomposition is not BIO v1.0's canonical longitudinal subcriterion formula. It does not change D2's official weight of 0.18. Label the result D2-SI, never as proof of longitudinal continuity, stability, persistence, or historical development. Missing longitudinal evidence is not itself a defect. The conversion `(D2-SI / 4) × 18` is valid only if the canonical aggregate normalizes criterion scores before aggregation; it does not define the full BSI aggregation.
 
 `D2 = 0.40 × Trajectory_Stability
    + 0.30 × Contradiction_Resolution_Rate
