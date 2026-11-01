@@ -173,6 +173,26 @@ If calculation mode cannot be established from the authoritative specification, 
 
 ### D2 canonical formula
 
+### D2-SI — Single-Input Numeric Operationalization
+
+**Status:** Proposed constrained operationalization v0.1; the canonical D2 construct, canonical longitudinal formula, and criterion weight 0.18 remain unchanged.
+
+For one content item, `Trajectory_Stability` is unavailable as a temporal construct. A numeric single-input path may replace that component only with `Internal_Structural_Coherence`, retaining the other canonical subcriteria and their weights:
+
+| D2-SI subcriterion | Weight |
+|---|---:|
+| Internal_Structural_Coherence | 0.40 |
+| Contradiction_Resolution_Rate | 0.30 |
+| Stable_Nodes_Consistency | 0.20 |
+| Theme_Evolution (within-content only) | 0.10 |
+
+```
+D2-SI = 0.40 I + 0.30 C + 0.20 N + 0.10 T
+```
+
+Each applicable score is 0–4. With all dimensions applicable, report the weighted sum directly on the 0–4 scale; do not divide by 4. For a genuinely N/A dimension, document the reason and renormalize by the sum of applicable weights. Missing longitudinal evidence is not a defect and must not be represented as temporal incoherence. The 0.40/0.30/0.20/0.10 decomposition is an operationalization, not a set of internal weights directly prescribed by BIO v1.0. Any conversion to a 0–100 BSI contribution must follow the canonical aggregate's score-normalization convention; `(D2-SI / 4) × 18` is valid only if criterion scores are normalized before aggregation.
+
+
 `D2 = 0.40 × Trajectory_Stability
    + 0.30 × Contradiction_Resolution_Rate
    + 0.20 × Stable_Nodes_Consistency
