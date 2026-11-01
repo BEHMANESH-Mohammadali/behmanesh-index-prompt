@@ -88,6 +88,16 @@ D1 = 0.35 × Causal_Link_Density
 
 ---
 
+
+
+### D2-SI Implementation and Aggregation Boundary
+
+The deterministic scoring module exposes `calculate_d2_si()` for the proposed 0–4 D2-SI arithmetic and `d2_si_to_normalized_score()` for the explicit scale conversion `(D2-SI / 4) × 100`. The converted value may be supplied as the D2 input to the existing BSI aggregator, which retains the official D2 weight of 0.18. This is a scale bridge, not a change to canonical longitudinal D2 or BIO v1.0. Non-calculated states (including N/A-only NOT_SCORABLE, INSUFFICIENT_EVIDENCE, and NOT_ASSESSED) cannot be converted into a numeric D2 score.
+
+The helper validates numeric ranges, state labels, applicability, and arithmetic. It does not independently verify textual evidence, select anchors, adjudicate evaluators, or determine whether multiple penalties are justified. Those remain evidence-layer responsibilities and must be documented in the assessment record. In particular, the same underlying defect must not be counted in multiple dimensions without distinct evidence for each asserted failure.
+
+**Validation status:** unit tests cover weighted arithmetic, N/A renormalization, non-score states, invalid inputs, scale conversion, and preservation of the official 0.18 D2 aggregation weight. Test execution and inter-rater calibration are separate validation steps; passing arithmetic tests alone does not establish anchor reliability or evaluator agreement.
+
 ### D2 — LongitudinalCoherence (وزن: 0.18)
 **تعریف BIO:** تداوم و انسجام استدلال در طول زمان، متن‌ها و زمینه‌ها
 
