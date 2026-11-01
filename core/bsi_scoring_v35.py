@@ -286,3 +286,17 @@ def calculate_d2_si(scores: Mapping[str, object]) -> dict:
         "scale": "0-4",
         "canonical_D2_modified": False,
     }
+
+
+
+def d2_si_to_normalized_score(d2_si_result: Mapping[str, object]) -> float:
+    """Convert a calculated 0..4 D2-SI result to the engine's 0..100 D2 input.
+
+    This is a scale conversion only. It does not assert that D2-SI is the
+    canonical longitudinal D2 formula. The BSI engine then applies the
+    unchanged official D2 weight (0.18) as part of its normal aggregation.
+    """
+    if d2_si_result.get("status") != "CALCULATED":
+        raise ScoringInputError("D2-SI must have CALCULATED status before normalization.")
+    value = _bounded_number(d2_si_result.get("D2-SI"), "D2-SI", 0, 4)
+    return round((value / 4.0) * 100.0, 6)
