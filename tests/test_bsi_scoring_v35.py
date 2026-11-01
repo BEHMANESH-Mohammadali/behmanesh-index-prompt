@@ -254,3 +254,41 @@ def test_d2_si_penalty_attribution_rejects_missing_rationale():
     ]
     with pytest.raises(ScoringInputError):
         validate_d2_si_penalty_attribution(records)
+
+
+
+def _valid_runtime_assessment():
+    return {
+        "dimension_scores": {"D1": 80, "D2": 80, "D3": 80, "D4": 80, "D5": 80, "D6": 80, "D7": 80},
+        "eig_gaps": {"MCG": 2, "CEG": 4, "FCG": 2, "LCG": 6},
+        "lcg_interpretation": "Rupture",
+        "calculation_mode": "linear",
+        "content_scope": "single_content",
+        "d2_assessment_basis": "internal_coherence_only",
+        "d2_si_scores": {"I": 4, "D": 3, "C": 2, "R": 3},
+        "ecc": {"claimed_confidence": 80, "supported_evidence": 60, "supported_method": 70, "supported_conclusion": 50},
+        "reig": {"ERG": 0, "MRG": 1, "CRG": 2, "ARG": 3, "FRG": 4},
+    }
+
+
+def test_runtime_integrates_optional_d2_si_and_checks_normalized_d2():
+    assessment = _valid_runtime_assessment()
+    result = run_v35_scoring(assessment)
+    assert result["D2-SI"]["status"] == "CALCULATED"
+    assert result["D2-SI"]["D2-SI"] == pytest.approx(3.3)
+    assert result["BSI"]["dimension_scores"]["D2"] == pytest.approx(82.5)
+
+
+def test_runtime_rejects_mismatch_between_d2_si_and_d2_engine_input():
+    assessment = _valid_runtime_assessment()
+    assessment["dimension_scores"]["D2"] = 80
+    with pytest.raises(ScoringInputError, match="normalized D2-SI"):
+        run_v35_scoring(assessment)
+
+
+def test_runtime_rejects_d2_si_for_longitudinal_corpus():
+    assessment = _valid_runtime_assessment()
+    assessment["content_scope"] = "longitudinal_corpus"
+    assessment["d2_assessment_basis"] = "longitudinal_evidence"
+    with pytest.raises(ScoringInputError, match="only applicable to single_content"):
+        run_v35_scoring(assessment)
