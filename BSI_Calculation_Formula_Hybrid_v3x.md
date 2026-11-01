@@ -404,3 +404,6 @@ D7 = 0.50 × Claim_Classification_Purity
 ---
 
 *در هر تعارض: BIO v1.0 مرجع است.*
+
+
+**Double-penalty traceability control:** the implementation also exposes `validate_d2_si_penalty_attribution()`. If one defect identifier is assigned to multiple dimensions, each cross-dimension entry must cite a distinct evidence identifier and its own rationale. This is a mechanical traceability check only; it cannot determine whether the evidence semantically proves distinct failures. Human/evaluator adjudication remains required.
