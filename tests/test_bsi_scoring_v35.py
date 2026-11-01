@@ -5,6 +5,7 @@ from core.bsi_scoring_v35 import (
     EIG_WEIGHTS,
     ScoringInputError,
     calculate_bsi,
+    calculate_d2_si,
     calculate_ecc_gaps,
     calculate_eig,
     calculate_reig,
@@ -165,3 +166,40 @@ def test_runtime_rejects_longitudinal_basis_for_single_content():
     }
     with pytest.raises(ScoringInputError, match="D2 assessment basis"):
         run_v35_scoring(assessment)
+
+
+
+def test_d2_si_calculates_weighted_score_on_zero_to_four_scale():
+    result = calculate_d2_si({"I": 4, "D": 3, "C": 2, "R": 1})
+    assert result["status"] == "CALCULATED"
+    assert result["D2-SI"] == pytest.approx(3.1)
+    assert result["scale"] == "0-4"
+    assert result["canonical_D2_modified"] is False
+
+
+def test_d2_si_renormalizes_only_genuinely_not_applicable_dimensions():
+    result = calculate_d2_si({"I": 4, "D": 2, "C": "N/A", "R": 2})
+    expected = (0.40 * 4 + 0.30 * 2 + 0.10 * 2) / 0.80
+    assert result["D2-SI"] == pytest.approx(expected)
+    assert result["renormalized"] is True
+    assert "C" not in result["applicable_weights"]
+
+
+@pytest.mark.parametrize("state", ["INSUFFICIENT_EVIDENCE", "NOT_ASSESSED"])
+def test_d2_si_non_score_states_do_not_become_zero(state):
+    result = calculate_d2_si({"I": 4, "D": 3, "C": 2, "R": state})
+    assert result["status"] == state
+    assert result["D2-SI"] is None
+
+
+def test_d2_si_all_na_is_not_scorable():
+    result = calculate_d2_si({"I": "N/A", "D": "N/A", "C": "N/A", "R": "N/A"})
+    assert result["status"] == "NOT_SCORABLE"
+    assert result["D2-SI"] is None
+
+
+def test_d2_si_rejects_invalid_score_and_state():
+    with pytest.raises(ScoringInputError):
+        calculate_d2_si({"I": 5, "D": 3, "C": 2, "R": 1})
+    with pytest.raises(ScoringInputError):
+        calculate_d2_si({"I": "UNKNOWN", "D": 3, "C": 2, "R": 1})
