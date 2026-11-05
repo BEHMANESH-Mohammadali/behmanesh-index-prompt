@@ -348,8 +348,16 @@ def final_reread(context: Mapping[str, Any]) -> StageResult:
 
 def execution_status(context: Mapping[str, Any]) -> StageResult:
     reread = context.get("final_reread", {})
-    if not isinstance(reread, Mapping) or reread.get("blocked") or not reread.get("passed"):
-        return StageResult(output={"blocked": True, "block_reason": "Final re-read did not pass."})
+    if (
+        not isinstance(reread, Mapping)
+        or reread.get("blocked")
+        or reread.get("passed") is not True
+        or reread.get("ready_for_final") is not True
+    ):
+        return StageResult(output={
+            "blocked": True,
+            "block_reason": "Final re-read must explicitly pass and set ready_for_final=true.",
+        })
     unresolved_t8 = any(
         isinstance(context.get(name), Mapping)
         and bool(context[name].get("unresolved_t8"))
