@@ -117,3 +117,35 @@ def test_full_orchestration_connects_existing_stages_and_scores_only_explicit_in
     assert result["scoring"]["engine_version"] == "3.5.0-explicit-input"
     assert result["scoring"]["D2_assessment_basis"] == "internal_coherence_only"
     assert len(result["trace"]) == 17
+
+
+def test_execution_status_requires_explicit_final_readiness():
+    from core.bsi_v35_execution import execution_status
+
+    missing_readiness = execution_status({
+        "final_reread": {"passed": True, "defects": [], "unresolved_gaps": []}
+    })
+    assert missing_readiness.output["blocked"] is True
+    assert "ready_for_final=true" in missing_readiness.output["block_reason"]
+
+    negative_readiness = execution_status({
+        "final_reread": {
+            "passed": True, "ready_for_final": False,
+            "defects": [], "unresolved_gaps": [],
+        }
+    })
+    assert negative_readiness.output["blocked"] is True
+
+
+def test_execution_status_requires_explicit_true_pass_and_readiness():
+    from core.bsi_v35_execution import execution_status
+
+    result = execution_status({
+        "final_reread": {"passed": "true", "ready_for_final": True}
+    })
+    assert result.output["blocked"] is True
+
+    accepted = execution_status({
+        "final_reread": {"passed": True, "ready_for_final": True}
+    })
+    assert accepted.output["ready_for_completion"] is True
