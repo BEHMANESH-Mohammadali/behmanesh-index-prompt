@@ -7,10 +7,12 @@ on:
       - "feat/bsi-v3.5-scoring-engine"
       - "feat/model-agnostic-execution-adapters"
       - "feat/d2-single-input-scoring"
+      - "release/bsi-v3.5"
   pull_request:
     branches:
       - main
       - "feat/bsi-v3.5-scoring-engine"
+      - "release/bsi-v3.5"
   workflow_dispatch:
 
 permissions:
