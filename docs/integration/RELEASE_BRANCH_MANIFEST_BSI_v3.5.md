@@ -42,3 +42,10 @@ The branch `archive/main-as-bsi-v3.4.2` preserves the exact prior `main` head sn
 ## Main-branch test-import reconciliation (2026-11-05)
 
 The `main` branch advanced by one commit after the release candidate was assembled. That commit added `tests/test_bsi_scoring_v35.py` with the earlier ECC expectation (`NOT_CALCULATED_SPECIFICATION_CONFLICT`). The release candidate already contains an expanded version of this test module covering ECC v2.0 absolute-gap aggregation with signed direction preservation, D2-SI arithmetic, and single-content D2 evidence constraints. The release version is therefore retained as the conflict resolution; the older test file is not copied over it. The merge commit records both branch histories while preserving the release tree, and the full test suite must be rerun on the resulting PR head before promotion.
+
+
+## Final re-read readiness hardening (2026-11-05)
+
+Maintenance PR #10 was merged after its pull-request CI passed. The `execution_status` handler now requires the final-reread result to contain literal boolean `passed=true` and literal boolean `ready_for_final=true`. Missing readiness, false readiness, and non-boolean pass values block completion. Regression tests cover these cases and the valid path.
+
+Post-merge CI on release commit `cfc64fe5ed7875d1dcfc54731ade928ee6a853b6` passed (workflow runs #146 push and #147 pull_request), including Python compilation and the full pytest suite. This remains repository-level automated validation, not independent Prompt-Only portability acceptance or third-party review.
