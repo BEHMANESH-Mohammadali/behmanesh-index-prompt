@@ -38,3 +38,7 @@ The branch `archive/main-as-bsi-v3.4.2` preserves the exact prior `main` head sn
 - Independent-interface Prompt-Only portability test remains outstanding.
 - Durable execution-trace persistence and independent human/third-party validation are not claimed.
 - This branch is not yet promoted to `main`; no existing branch was deleted or force-updated.
+
+## Main-branch test-import reconciliation (2026-11-05)
+
+The `main` branch advanced by one commit after the release candidate was assembled. That commit added `tests/test_bsi_scoring_v35.py` with the earlier ECC expectation (`NOT_CALCULATED_SPECIFICATION_CONFLICT`). The release candidate already contains an expanded version of this test module covering ECC v2.0 absolute-gap aggregation with signed direction preservation, D2-SI arithmetic, and single-content D2 evidence constraints. The release version is therefore retained as the conflict resolution; the older test file is not copied over it. The merge commit records both branch histories while preserving the release tree, and the full test suite must be rerun on the resulting PR head before promotion.
