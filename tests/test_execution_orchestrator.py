@@ -3,7 +3,10 @@ from core.execution_orchestrator import BSIExecutionOrchestrator, StageResult
 
 
 def complete_handler(context):
-    return StageResult(output={"stage": context["stage"]}, verification_state="INTERNAL")
+    output = {"stage": context["stage"]}
+    if context["stage"] == "execution_status":
+        output["ready_for_completion"] = True
+    return StageResult(output=output, verification_state="INTERNAL")
 
 
 def test_orchestrator_blocks_when_any_mandatory_handler_is_missing():
@@ -56,3 +59,34 @@ def test_correction_loop_blocks_completion_when_limit_is_reached():
     assert result.completion["authorized"] is False
     record = next(x for x in result.trace.stages if x.stage == "correction_and_reanalysis")
     assert record.status.value == "BLOCKED"
+
+
+def test_orchestrator_blocks_empty_or_unstructured_stage_outputs():
+    for invalid_output in (None, {}, "completed"):
+        handlers = {stage: complete_handler for stage in MANDATORY_STAGES}
+        handlers["structural_analysis"] = lambda _context, value=invalid_output: StageResult(output=value)
+        result = BSIExecutionOrchestrator(handlers).run({"text": "A sufficiently long target text."})
+        assert result.completion["authorized"] is False
+        record = next(x for x in result.trace.stages if x.stage == "structural_analysis")
+        assert record.status.value == "BLOCKED"
+        assert "structured output" in record.limitation
+
+
+def test_orchestrator_requires_execution_status_readiness_signal():
+    handlers = {stage: complete_handler for stage in MANDATORY_STAGES}
+    handlers["execution_status"] = lambda _context: StageResult(
+        output={"status": "SELF_AUDIT_ONLY", "ready_for_completion": False}
+    )
+    result = BSIExecutionOrchestrator(handlers).run({"text": "A sufficiently long target text."})
+    assert result.completion["authorized"] is False
+    record = next(x for x in result.trace.stages if x.stage == "execution_status")
+    assert record.status.value == "BLOCKED"
+
+
+def test_not_applicable_stage_may_omit_output_explicitly():
+    handlers = {stage: complete_handler for stage in MANDATORY_STAGES}
+    handlers["counterevidence"] = lambda _context: StageResult(not_applicable=True)
+    result = BSIExecutionOrchestrator(handlers).run({"text": "A sufficiently long target text."})
+    assert result.completion["authorized"] is True
+    record = next(x for x in result.trace.stages if x.stage == "counterevidence")
+    assert record.status.value == "NOT_APPLICABLE"
