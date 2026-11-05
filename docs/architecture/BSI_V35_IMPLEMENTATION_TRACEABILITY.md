@@ -2,7 +2,7 @@
 
 **Review scope:** existing Master Prompt, Execution Architecture, v3.5 scoring runtime, existing v3.4.2 analysis/RAG pipeline, provider adapters, and execution orchestrator.
 **Purpose:** map already-defined requirements to existing code and identify genuine connection gaps. This document does not create or redefine BSI analytical requirements.
-**Review basis:** repository files inspected on `feat/model-agnostic-execution-adapters` at the review commit. CI was checked for the execution-trace commit `fd7cb8b6dbbcd7a37310a70bf87cccc822babba9`.
+**Review basis:** repository files inspected on `release/bsi-v3.5` through commit `cfc64fe5ed7875d1dcfc54731ade928ee6a853b6`. Repository CI passed after maintenance PRs #7–#10; see the release-branch manifest for exact run and commit provenance.
 
 ## Decision
 
@@ -50,7 +50,7 @@ This is an operational guarded workflow, not a claim of independent validation o
 4. Treat the RAG backend as experimental keyword retrieval. It does not establish source-level verification and can return no source references.
 5. Durable execution-trace persistence, independent human/third-party validation, live-provider conformance probes, and broad retrieval coverage are not implemented by this integration.
 6. Keep legacy v3.4.1/v3.4.2 heuristic scoring separate from v3.5 explicit-input scoring.
-7. Keep PR Draft and unmerged pending review; do not merge without explicit authorization.
+7. The release PR remains Draft pending independent Prompt-Only acceptance, full changed-file review, and local Master Prompt reconciliation. Do not equate repository CI with those outstanding gates.
 
 ## Non-goals for this pass
 
@@ -90,3 +90,10 @@ The deterministic `run_v35_scoring()` function and the direct `/bsi/score`, `/bs
 The guarded `/bsi/execute` orchestration path has a separate evidence-basis gate. It requires evidence mappings and readiness signals for D1-D7, EIG, ECC, and Draft Analysis REIG before invoking the scoring stage. Even there, the gate checks the presence and traceability structure of supplied evidence; it does not establish the truth or quality of evidence merely because a reference or rationale is present. Source inspection, evaluator competence, and substantive evidence adjudication remain external analytical responsibilities.
 
 This distinction is material: **calculator validation ≠ evidence validation ≠ independent verification**. API/MCP descriptions and the runtime docstring are aligned with this boundary. No scoring formula, weight, or analytical criterion is changed by this clarification.
+
+
+## Review refresh — 2026-11-05
+
+The fail-closed completion gate was further hardened in maintenance PR #10: `execution_status` now requires literal boolean `passed=true` and `ready_for_final=true` from the final-reread stage. Missing, false, or non-boolean values block completion. PR CI and post-merge release CI passed.
+
+The implementation is therefore integrated at repository level, but the following are still not established: independent Prompt-Only portability acceptance, empirical D2-SI inter-rater reliability, live-provider capability conformance, durable execution-trace persistence, and independent third-party validation. The local Termux copy of the Master Prompt was not accessible during this review.
