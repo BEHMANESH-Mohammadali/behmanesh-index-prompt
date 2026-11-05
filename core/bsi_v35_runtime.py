@@ -1,8 +1,10 @@
-"""Validated BSI v3.5 scoring runtime.
+"""Deterministic BSI v3.5 calculator for assessor-supplied inputs.
 
-This runtime connects the scoring primitives to an executable, explicit-input
-contract. It deliberately does not infer D1-D7 or EIG values from raw text.
-Those assessments must be produced by the analysis layer with traceable evidence.
+This module validates required fields, numeric ranges, and scope constraints.
+It does not inspect, authenticate, or assess the quality of evidence supporting
+the supplied scores. Evidence-basis enforcement belongs to the guarded
+orchestration path; direct score/analyze/MCP callers must supply assessments
+already evaluated under the canonical evidence requirements.
 """
 from __future__ import annotations
 
@@ -22,7 +24,11 @@ from core.bsi_scoring_v35 import (
 
 
 def run_v35_scoring(assessment: Mapping[str, Any]) -> dict:
-    """Run the v3.5 numerical scoring stage from evidence-backed assessments.
+    """Run numerical scoring on explicit assessor-supplied assessment inputs.
+
+    This function validates structure and arithmetic, not the evidence basis
+    or authenticity behind the supplied scores. Use the guarded execution
+    workflow when evidence-basis gates are required.
 
     Required assessment keys:
       dimension_scores: D1..D7 numeric scores on 0..100
