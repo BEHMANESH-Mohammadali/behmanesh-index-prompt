@@ -81,3 +81,12 @@ This change restores the v3.4.2-style portability property: the complete prompt 
 - Check that all required normative reference documents are embedded in the prompt, including SOP v3.4.2 and the hybrid calculation formula.
 - Run the existing repository test suite and prompt-package tests.
 - Perform a manual portability test by pasting only the Master Prompt plus a target text into at least one independent LLM interface without repository/API access; record the model/interface and limitations before claiming this test passed.
+
+
+## Direct calculator versus guarded execution — explicit evidence boundary
+
+The deterministic `run_v35_scoring()` function and the direct `/bsi/score`, `/bsi/analyze`, and MCP scoring interfaces validate required assessment fields, numeric ranges, calculation mode, and D2 scope. They do **not** inspect, authenticate, or independently evaluate the evidence behind supplied D1-D7, EIG, ECC, or REIG values. These interfaces are calculator contracts for assessments already evaluated upstream; explicit numeric inputs alone are not proof that an assessment is evidence-backed.
+
+The guarded `/bsi/execute` orchestration path has a separate evidence-basis gate. It requires evidence mappings and readiness signals for D1-D7, EIG, ECC, and Draft Analysis REIG before invoking the scoring stage. Even there, the gate checks the presence and traceability structure of supplied evidence; it does not establish the truth or quality of evidence merely because a reference or rationale is present. Source inspection, evaluator competence, and substantive evidence adjudication remain external analytical responsibilities.
+
+This distinction is material: **calculator validation ≠ evidence validation ≠ independent verification**. API/MCP descriptions and the runtime docstring are aligned with this boundary. No scoring formula, weight, or analytical criterion is changed by this clarification.
