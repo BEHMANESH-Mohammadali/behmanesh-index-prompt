@@ -16,12 +16,12 @@ def mcp_manifest():
         "description": "Behmanesh Structural Index v3.5 explicit-input scoring interface.",
         "tools": [{
             "name": "analyze_with_bsi",
-            "description": "Calculate BSI v3.5 from explicit evidence-backed assessments. Raw text alone is not heuristically scored.",
+            "description": "Calculate BSI v3.5 from explicit assessor-supplied numerical assessments. This calculator validates schema and ranges but does not inspect or authenticate the evidence basis behind scores. Raw text alone is not heuristically scored.",
             "input_schema": {
                 "type": "object",
                 "properties": {
                     "text": {"type": "string", "description": "The source content being assessed"},
-                    "assessment": {"type": "object", "description": "Evidence-backed D1-D7, EIG, ECC, REIG, calculation mode, and explicit D2 evidence scope."},
+                    "assessment": {"type": "object", "description": "Assessor-supplied D1-D7, EIG, ECC, REIG values, calculation mode, and explicit D2 evidence scope. Evidence must be evaluated upstream; this calculator does not authenticate it."},
                 },
                 "required": ["text", "assessment"],
             },
