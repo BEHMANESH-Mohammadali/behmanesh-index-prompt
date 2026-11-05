@@ -76,12 +76,31 @@ class BSIExecutionOrchestrator:
                     isinstance(result.output, Mapping)
                     and bool(result.output.get("blocked", False))
                 )
+                invalid_output = (
+                    not result.not_applicable
+                    and (
+                        not isinstance(result.output, Mapping)
+                        or not bool(result.output)
+                    )
+                )
+                execution_status_not_ready = (
+                    stage == "execution_status"
+                    and (
+                        not isinstance(result.output, Mapping)
+                        or result.output.get("ready_for_completion") is not True
+                    )
+                )
                 status = (
-                    StageStatus.BLOCKED if correction_unresolved or explicit_block
+                    StageStatus.BLOCKED
+                    if correction_unresolved or explicit_block or invalid_output or execution_status_not_ready
                     else StageStatus.NOT_APPLICABLE if result.not_applicable
                     else StageStatus.COMPLETED
                 )
                 limitation = result.limitation
+                if invalid_output and not limitation:
+                    limitation = "Stage returned no structured output; completion is blocked."
+                if execution_status_not_ready and not limitation:
+                    limitation = "Execution status did not explicitly authorize readiness for completion."
                 if correction_unresolved and not limitation:
                     limitation = "Correction/reanalysis remains unresolved; completion is blocked."
                 if explicit_block and not limitation:
