@@ -1,6 +1,6 @@
 # BSI v3.5 scoring-engine upgrade — implementation notes
 
-Status: **draft on branch `feat/bsi-v3.5-scoring-engine`; not merged**
+Status: **integrated in `release/bsi-v3.5`; repository CI passed. Independent Prompt-Only acceptance and empirical calibration remain outstanding.**
 
 ## Scope of this first implementation slice
 
@@ -27,15 +27,15 @@ The legacy `core/bsi_engine.py` and `core/bsi_pipeline.py` remain intact for tra
 - ECC v2.0 aggregation is implemented exactly as specified: `ECC_Total = mean(|EG|, |MG|, |LG|)`. Signed EG/MG/LG values and per-gap direction (OVERCLAIM / UNDERCLAIM / ALIGNED) are retained so the aggregate does not erase whether confidence is overstated or understated. The matrix's earlier unresolved note is superseded by a documented source-based resolution.
 - Missing/extra EIG or REIG dimensions and out-of-range values raise explicit input errors.
 
-## Known integration work still required
+## Integration status and remaining validation
 
 1. The EIG penalty decision is resolved for this upgrade: use `EIG_avg / 20`, confirmed by the owner on 2026-10-31. The older formula reference still needs reconciliation before production integration; the canonicalization matrix records the approved mapping on this branch.
 2. ECC aggregation authority is resolved for this implementation slice: ECC v2.0 explicitly defines the mean absolute component-gap aggregate; the canonicalization matrix records the resolution and signed component gaps remain available for directional interpretation.
 3. Single-content D2 handling is resolved by the owner: assess internal coherence only, do not infer longitudinal trajectory, and do not treat unavailable longitudinal evidence as a defect. The D2 score must still be evidence-backed; no automatic imputation or weight renormalization is performed.
 4. Decide an authoritative nonlinear-selection rule or keep mode explicit at the caller.
-5. Review the new runtime against the entire canonical output contract and expand integration tests. The `/bsi/score`, `/bsi/analyze`, `/bsi/compare`, and MCP `analyze_with_bsi` interfaces call the explicit-input runtime. The legacy MCP route no longer invokes the v3.4.1 heuristic engine. A separate evidence-analysis layer that derives defensible D1-D7/EIG/ECC/REIG inputs from source content is not yet implemented; raw-text-only scoring is intentionally rejected. The version endpoint explicitly reports that autonomous evidence analysis and the Draft correction loop are not yet provided.
-6. Run CI / unit tests in the repository environment and inspect diff, status, and regression results before proposing a merge.
-7. Keep every public scoring interface, including MCP, on the v3.5 explicit-input contract; do not leave a legacy heuristic scoring bypass exposed.
+5. The guarded `/bsi/execute` lifecycle is integrated with source-material checks, model-assisted analysis/audit stages, bounded correction/reanalysis, final re-read, and fail-closed completion. It does not autonomously derive all D1-D7 values: those remain explicit assessor-supplied inputs with evidence mappings. Raw-text-only scoring remains rejected.
+6. Repository CI has passed on the release branch after maintenance PRs #7–#10, including Python compilation and the full pytest suite. This validates repository tests, not live-provider quality or broad source coverage.
+7. Remaining: independent Prompt-Only portability acceptance; live-provider conformance/capability probes; empirical D2-SI inter-rater calibration; durable execution-trace persistence; independent human/third-party review; and local Termux Master Prompt reconciliation. Keep the explicit-input scoring boundary and do not expose a legacy heuristic scoring bypass.
 
 ## Non-goals
 
