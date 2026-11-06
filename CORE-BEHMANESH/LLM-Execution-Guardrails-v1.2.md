@@ -123,15 +123,13 @@ Methodological Drift ثبت و اصلاح شود.
 ## ۳. پرامپت‌های ضد انحراف
 
 **Initialization Prompt (اجباری):**
-> «شاخص بهمنش را دقیقاً طبق SOP v3.4.2 + CORE_BEHMANESH v1.0 +
-> BIO v1.0 + Guardrails v1.3 اجرا کن.
+ > «شاخص بهمنش را طبق Master Prompt BSI v3.5، قرارداد خروجی Layer C، CORE_BEHMANESH v1.0، BIO v1.0 و Guardrails v1.3 اجرا کن.
 > Rule #0: ابتدا Core Claim را استخراج کن.
 > سپس تمام الزامات را لیست کن و گام‌به‌گام پیش برو.»
 
 **Correction Prompt — Methodological Drift:**
 > «در اجرای قبلی دچار Methodological Drift شدی.
-> دوباره به SOP v3.4.2، CORE_BEHMANESH v1.0 و Guardrails v1.3
-> مراجعه کن و خروجی را اصلاح کن.»
+> دوباره Master Prompt BSI v3.5، قرارداد خروجی Layer C، CORE_BEHMANESH v1.0 و Guardrails v1.3 را اعمال کن و خروجی را اصلاح کن.»
 
 **Correction Prompt — Manifest Bias:**
 > «تحلیل در لایه Manifest متوقف شده.
@@ -181,4 +179,4 @@ EIG، ECC و REIG گزارش‌های مستقل و شماره‌دار در خ�
 
 **این سند بخشی از راهنمای اجرای BSI v3.5 Development Release است.**
 
-*نسخه بعدی (v1.3) بر اساس Case Study های واقعی به‌روزرسانی خواهد شد.*
+*نسخه بعدی (v1.4) در صورت نیاز بر اساس Case Studyهای واقعی به‌روزرسانی خواهد شد.*
