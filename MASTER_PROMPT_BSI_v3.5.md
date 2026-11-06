@@ -3,7 +3,7 @@
 **Version:** 3.5  
 **Baseline:** BSI v3.4.2  
 **Execution Architecture:** BSI 3.5 — Execution Architecture  
-**Status:** Canonical Prompt-First Candidate — portable standalone execution; optional runtime integration  
+**Status:** Development Release  
 **Author:** Mohammadali Behmanesh (@behmanesham)
 
 ---
@@ -64,7 +64,9 @@ The following documents are the authoritative reference sources for the correspo
 
 - [CORE-BEHMANESH v1.0](CORE-BEHMANESH/v1.0/CORE_BEHMANESH_v1.0.md)
 - [BIO v1.0](Ontology/BIO_v1.0.md)
-- [SOP — Intellectual Content Analysis v3.4.2](SOP_Intellectual_Content_Analysis_v3.4.2.md)
+- [Inherited analytical core source: SOP — Intellectual Content Analysis v3.4.2](SOP_Intellectual_Content_Analysis_v3.4.2.md)
+- [BSI v3.5 Analytical Output Contract — Layer C](docs/specification/ANALYTICAL_OUTPUT_CONTRACT_LAYERC_v3.5.md)
+- [Output Format Companion SOP v1.2](SOP_Output_Format_v1.1.md)
 - [BSI v3.5 Execution Architecture](BSI_3.5_Execution_Architecture.md)
 - [EIG — Epistemic Integrity Gap Analyzer v1.0](CORE-BEHMANESH/Shared_Components/EIG/Epistemic_Integrity_Gap_Analyzer_v1.0.md)
 - [ECC — Epistemic Confidence Calibration v2.0](CORE-BEHMANESH/Shared_Components/EIG/Epistemic_Confidence_Calibration_v2.0.md)

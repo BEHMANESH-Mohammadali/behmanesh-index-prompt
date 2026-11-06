@@ -1,11 +1,18 @@
-# LLM Execution Guardrails v1.2
+# LLM Execution Guardrails v1.3
+
+**Compatibility note:** The repository path retains the historical `v1.2` filename for backward references; the document content is version 1.3.
 
 **راهنمای اجرای ایمن، دقیق و پایدار شاخص بهمنش توسط مدل‌های زبانی**
 
-**نسخه:** 1.2
+**نسخه:** 1.3
 **تاریخ:** ۴ ژوئن ۲۰۲۶
-**سازگار با:** CORE_BEHMANESH v1.0 + BIO v1.0 + Behmanesh Index v3.4
-**تغییرات نسبت به v1.0:**
+**سازگار با:** CORE_BEHMANESH v1.0 + BIO v1.0 + BSI v3.5 Development Release
+**تغییرات نسبت به v1.2:**
+- سازگاری صریح با BSI v3.5 و Prompt-First execution
+- ارجاع ساختار خروجی به قرارداد canonical لایه C
+- تفکیک خروجی تحلیلی از workflow و audit trace
+
+**تغییرات تاریخی نسبت به v1.0:**
 - اضافه شدن Rule#0 — Core Claim First
 - ارجاع به EIG Module و Assumption Excavation Protocol
 - به‌روزرسانی چک‌لیست پیش از تحلیل
@@ -29,7 +36,7 @@
 
 ## ۱. اصول اساسی Guardrails (غیرقابل نقض)
 
-### Rule #0 — Core Claim First (جدید در v1.2)
+### Rule #0 — Core Claim First (updated in v1.3)
 **هیچ تحلیلی بدون استخراج Core Claim شروع نمی‌شود.**
 
 قبل از هر اقدام دیگری، ادعای مرکزی نویسنده/متن را در یک جمله
@@ -45,14 +52,10 @@ Core Claim: [یک جمله — بدون بند]
 
 ---
 
-### Rule #1 — Full Repository Awareness
-مدل باید قبل از هر تحلیل، تمام فایل‌های کلیدی را خوانده باشد:
-- README.md
-- Methodology.md
-- SOP_Intellectual_Content_Analysis_v3.4.2.md
-- CORE_BEHMANESH v1.0
-- BIO v1.0
-- این سند (Guardrails)
+### Rule #1 — Canonical Source Awareness
+مدل باید پیش از تحلیل، منابع مرجع مرتبط با دامنه و نوع تحلیل را شناسایی و در حد لازم بررسی کند؛ از جمله CORE_BEHMANESH v1.0، BIO v1.0، Master Prompt و قرارداد خروجی Layer C.
+
+وجود دسترسی به کل مخزن پیش‌شرط اجرای مستقل Prompt-First نیست. اگر Master Prompt کامل و خودبسنده در اختیار است، نبود checkout یا دسترسی مخزن به‌خودی‌خود مانع اجرا نیست. هیچ مطالعه‌ای که واقعاً انجام نشده نباید ادعا شود.
 
 ---
 
@@ -88,7 +91,7 @@ Longitudinal evidence remains intrinsic to D2 and must be evaluated according to
 
 ---
 
-### Rule #6 — EIG و Assumption Excavation اجباری در سطح ۲ و ۳ (جدید در v1.2)
+### Rule #6 — EIG و Assumption Excavation اجباری در سطح ۲ و ۳
 در تمام تحلیل‌های سطح ۲ و ۳:
 
 **ابتدا:** `Assumption_Excavation_Protocol_v1.1.md` اجرا شود
@@ -120,15 +123,13 @@ Methodological Drift ثبت و اصلاح شود.
 ## ۳. پرامپت‌های ضد انحراف
 
 **Initialization Prompt (اجباری):**
-> «شاخص بهمنش را دقیقاً طبق SOP v3.4.2 + CORE_BEHMANESH v1.0 +
-> BIO v1.0 + Guardrails v1.2 اجرا کن.
+ > «شاخص بهمنش را طبق Master Prompt BSI v3.5، قرارداد خروجی Layer C، CORE_BEHMANESH v1.0، BIO v1.0 و Guardrails v1.3 اجرا کن.
 > Rule #0: ابتدا Core Claim را استخراج کن.
 > سپس تمام الزامات را لیست کن و گام‌به‌گام پیش برو.»
 
 **Correction Prompt — Methodological Drift:**
 > «در اجرای قبلی دچار Methodological Drift شدی.
-> دوباره به SOP v3.4.2، CORE_BEHMANESH v1.0 و Guardrails v1.2
-> مراجعه کن و خروجی را اصلاح کن.»
+> دوباره Master Prompt BSI v3.5، قرارداد خروجی Layer C، CORE_BEHMANESH v1.0 و Guardrails v1.3 را اعمال کن و خروجی را اصلاح کن.»
 
 **Correction Prompt — Manifest Bias:**
 > «تحلیل در لایه Manifest متوقف شده.
@@ -145,24 +146,23 @@ Methodological Drift ثبت و اصلاح شود.
 
 ---
 
-## ۴. ساختار خروجی استاندارد
+## ۴. قرارداد خروجی
 
-هر تحلیل باید شامل موارد زیر به ترتیب باشد:
+ترتیب و اجزای خروجی نهایی تابع سند canonical زیر است:
 
-```
-۰. Core Claim (یک جمله — Rule #0)
-۱. Domain & Context Detection
-۲. Layered Analysis:
-   - Manifest Layer
-   - Latent Layer (شامل Assumption Excavation)
-   - Meta Layer (شامل EIG Score)
-۳. Theme & Core Node
-۴. Weighted Score Table
-۵. Uncertainty Report
-۶. Final Synthesis
-```
+`docs/specification/ANALYTICAL_OUTPUT_CONTRACT_LAYERC_v3.5.md`
 
----
+ترتیب الزامی:
+1. Analysis Title and Source Identification
+2. Executive Summary (شامل Core Claim)
+3. Seven Main BSI Criteria (D1–D7)
+4. CreativeValueAdd
+5. Deep Structural Analysis (Manifest / Latent / Meta)
+6. Final Synthesis
+7. D2 Temporal Evidence Presentation، در صورت applicability
+8. Final BSI Score
+
+EIG، ECC و REIG گزارش‌های مستقل و شماره‌دار در خروجی Layer C نیستند؛ اثر substantive آن‌ها باید در تحلیل ساختاری، synthesis، confidence و limitations ادغام شود. Draft Analysis، REIG correction loop، Completion Gate و machine/audit trace داخلی باقی می‌مانند. جزئیات و مرزهای کامل در Layer C و Master Prompt تعیین شده‌اند.
 
 ## ۵. جدول ارجاع سریع ماژول‌ها
 
@@ -177,7 +177,6 @@ Methodological Drift ثبت و اصلاح شود.
 
 ---
 
-**این سند بخشی جدایی‌ناپذیر از اجرای حرفه‌ای شاخص بهمنش
-نسخه Hybrid v4 است.**
+**این سند بخشی از راهنمای اجرای BSI v3.5 Development Release است.**
 
-*نسخه بعدی (v1.3) بر اساس Case Study های واقعی به‌روزرسانی خواهد شد.*
+*نسخه بعدی (v1.4) در صورت نیاز بر اساس Case Studyهای واقعی به‌روزرسانی خواهد شد.*
