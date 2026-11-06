@@ -1,6 +1,6 @@
 BSI 3.5 — Execution Architecture
 
-Status: Final Baseline: BSI v3.4.2 Branch: develop/v3.5 Role: Execution Control Layer Protected Boundary: BSI Knowledge Core
+Status: Development Release Baseline: BSI v3.4.2 Branch: develop/v3.5 Role: Execution Control Layer Protected Boundary: BSI Knowledge Core
 
 1. Purpose
 
