@@ -2,6 +2,7 @@
 # SOP Output Format & Presentation
 
 **Version:** 1.2
+**Compatibility note:** The repository filename retains the historical `v1.1` label; the document content is version 1.2.
 **Status:** Mandatory companion guidance for BSI v3.5 analytical outputs
 **Architectural role:** Presentation guidance subordinate to Layer C
 **Canonical authority:** `docs/specification/ANALYTICAL_OUTPUT_CONTRACT_LAYERC_v3.5.md`
