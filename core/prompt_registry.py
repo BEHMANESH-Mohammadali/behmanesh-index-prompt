@@ -56,8 +56,8 @@ def load_bsi_v35_package() -> dict[str, Any]:
     return {
         "package_schema": "bsi-prompt-package/v1",
         "prompt_version": PROMPT_VERSION,
-        "prompt_status": "canonical-prompt-runtime-integration-pending",
-        "execution_mode": "external-llm-required",
+        "prompt_status": "canonical-prompt-first-portable-candidate",
+        "execution_mode": "prompt-only-supported; optional-runtime-integration",
         "does_not_compute_scores": True,
         "master_prompt": prompt,
         "authoritative_references": references,

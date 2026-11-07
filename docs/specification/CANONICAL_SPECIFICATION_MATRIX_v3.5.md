@@ -57,16 +57,29 @@ Its four-layer structure remains:
 
 Its relationship with Recursive EIG remains unchanged.
 
-### Unresolved implementation detail
+### Resolved computational semantics
 
-The exact computational aggregation semantics of ECC v2.0 have not yet been canonically resolved in this matrix.
+The authoritative ECC v2.0 document explicitly defines the aggregate:
 
-Therefore:
+`ECC_Total = mean(|EG|, |MG|, |LG|)`
 
-- execution architecture may enforce ECC where required;
-- execution architecture may not redefine ECC;
-- execution architecture may not substitute another calibration mechanism;
-- execution architecture may not invent aggregation or weighting rules.
+where:
+
+- `EG = CC-C − SC-E`
+- `MG = CC-C − SC-M`
+- `LG = CC-C − SC-L`
+
+The signed component gaps MUST be preserved in the output. Their direction is analytically meaningful:
+
+- positive gap: claimed confidence exceeds supported confidence (**overclaim / overestimation**);
+- negative gap: supported confidence exceeds claimed confidence (**Underclaim / underconfidence**);
+- zero gap: claimed and supported confidence are aligned.
+
+`ECC_Total` is the arithmetic mean of the absolute component gaps, on the same 0–100 scale. The aggregate expresses magnitude of calibration mismatch; it MUST NOT replace or erase the signed component gaps or their directional interpretation.
+
+The ECC v2.0 interpretation bands apply to the aggregate exactly as specified in that source. No new weighting, normalization, or alternative aggregation is introduced.
+
+This resolution follows ECC v2.0 §§ “محاسبه شکاف‌ها”, “Underconfidence”, and “شاخص نهایی ECC”. The earlier unresolved status in this matrix is superseded by this explicit source-based resolution; it is retained here as a documented canonicalization decision, not treated as if the ambiguity never existed.
 
 ---
 
@@ -138,7 +151,7 @@ Total:
 
 with:
 
-`EIG_penalty = EIG_avg / 10`
+`EIG_penalty = EIG_avg / 20`
 
 where `EIG_avg` is the applicable weighted average of EIG gaps on the 0–10 scale.
 
@@ -156,9 +169,132 @@ If calculation mode cannot be established from the authoritative specification, 
 
 ---
 
+
+
+### D2-SI Implementation and Aggregation Boundary
+
+The deterministic scoring module exposes `calculate_d2_si()` for the proposed 0–4 D2-SI arithmetic and `d2_si_to_normalized_score()` for the explicit scale conversion `(D2-SI / 4) × 100`. The converted value may be supplied as the D2 input to the existing BSI aggregator, which retains the official D2 weight of 0.18. This is a scale bridge, not a change to canonical longitudinal D2 or BIO v1.0. Non-calculated states (including N/A-only NOT_SCORABLE, INSUFFICIENT_EVIDENCE, and NOT_ASSESSED) cannot be converted into a numeric D2 score.
+
+The helper validates numeric ranges, state labels, applicability, and arithmetic. It does not independently verify textual evidence, select anchors, adjudicate evaluators, or determine whether multiple penalties are justified. Those remain evidence-layer responsibilities and must be documented in the assessment record. In particular, the same underlying defect must not be counted in multiple dimensions without distinct evidence for each asserted failure.
+
+**Validation status:** unit tests cover weighted arithmetic, N/A renormalization, non-score states, invalid inputs, scale conversion, and preservation of the official 0.18 D2 aggregation weight. Test execution and inter-rater calibration are separate validation steps; passing arithmetic tests alone does not establish anchor reliability or evaluator agreement.
+
 ## 5. LONGITUDINAL HANDLING
 
 ### D2 canonical formula
+
+### D2-SI — Single-Input Numeric Operationalization
+
+**Status:** Proposed constrained single-input operationalization v0.2. The canonical D2 construct, canonical longitudinal formula, and official criterion weight 0.18 remain unchanged.
+
+A single input cannot establish temporal trajectory, longitudinal stability, persistence, continuity, or historical development. A numeric single-input result may be calculated using the four operational dimensions below. This is not a set of internal weights directly prescribed by BIO v1.0.
+
+| D2-SI subcriterion | Weight | Operational definition |
+|---|---:|---|
+| Internal Structural Coherence | 0.40 | Logical and functional fit among the problem, premises, claims, concepts, evidence, reasoning, conclusions, and limitations; support for conclusions, defensible inference, proportional certainty, and unresolved contradictions. Difference or change is not automatically contradiction. |
+| Developmental Consistency | 0.30 | Whether successive stages of concepts and arguments within the same content build on, refine, or justifiably revise earlier stages, with connected intermediate conclusions rather than unexplained breaks or disconnected additions. Not historical development across time. |
+| Cross-Context Transfer | 0.20 | Validity of transferring concepts or principles across contexts, domains, or analytical levels; basis for transfer, relevant similarities and differences, preservation of meaning and boundary conditions, and whether analogies or generalizations exceed evidence. Domain count is not itself merit. |
+| Reflective Integration | 0.10 | Whether limitations, hidden assumptions, counterevidence, and revisions are integrated into reasoning and conclusions. Merely mentioning a limitation or saying “I may be wrong” is insufficient if it is ignored downstream. |
+
+```
+D2-SI = 0.40 × Internal_Structural_Coherence
+      + 0.30 × Developmental_Consistency
+      + 0.20 × Cross_Context_Transfer
+      + 0.10 × Reflective_Integration
+```
+
+Each applicable dimension is scored from 0 to 4. With all dimensions applicable, report the weighted sum directly on the 0–4 scale; do not divide by 4. For a genuinely non-applicable dimension, state the reason and renormalize:
+
+```
+D2-SI = Σ(weight_i × score_i) / Σ(weight_i for applicable dimensions)
+```
+
+N/A must not conceal weak performance. Report raw scores, applicability, any renormalization, and the rationale for each N/A. If no dimension can be defensibly scored, report D2-SI as not scorable.
+
+**Overlap control:** Assign each observed problem to the dimension that most directly captures it. An unsupported conclusion primarily affects Internal Structural Coherence; disconnected stages or unexplained conceptual shifts affect Developmental Consistency; invalid cross-context generalization affects Cross-Context Transfer; and limitations or counterevidence acknowledged but ignored in the conclusion affect Reflective Integration. Do not penalize one underlying error multiple times unless distinct evidence supports each penalty.
+
+### D2-SI Behavioral Scoring Anchors (0–4)
+
+Apply the following observable anchors independently to each D2-SI dimension. Scores must be supported by identifiable evidence in the analyzed content; writing polish, topic importance, and agreement with the author are not substitutes for structural evidence.
+
+#### Shared scale semantics
+
+| Score | Behavioral anchor | Interpretation |
+|---:|---|---|
+| 0 | Demonstrable fundamental failure in the applicable dimension; the expected structure is absent or materially invalidated. | Use only when sufficient evidence establishes failure; never use for missing information. |
+| 1 | Very weak performance; limited positive evidence is outweighed by major, pervasive, or unresolved defects. | Major deficiencies dominate. |
+| 2 | Partial/basic performance; the dimension is recognizably present, but material gaps or discontinuities remain. | A genuine intermediate level, not a default score. |
+| 3 | Strong performance; the dimension is substantially coherent and defensible, with limited non-fundamental deficiencies. | Remaining defects do not materially undermine the dimension. |
+| 4 | Very strong and integrated performance throughout the relevant content; no material unresolved defect in this dimension is evidenced. | Requires positive evidence of strong performance; absence of detected errors alone is insufficient. |
+
+A score of 0 is not equivalent to insufficient evidence. If the dimension is applicable but cannot be assessed defensibly, use INSUFFICIENT_EVIDENCE rather than 0. A score of 4 does not claim absolute perfection; it describes performance within the scope and evidence of the assessed content.
+
+#### Dimension-specific anchors
+
+**Internal Structural Coherence (I) — weight 0.40**
+
+| Score | Anchor |
+|---:|---|
+| 0 | A fundamental break among the problem, claims, reasoning, and conclusion, or an unresolved central contradiction invalidates the conclusion. |
+| 1 | Inferential links are predominantly weak; multiple major unsupported claims or inferential jumps occur. |
+| 2 | The overall argument is identifiable, but important links are incomplete and some conclusions exceed their support. |
+| 3 | Problem, premises, evidence, reasoning, and conclusions are largely aligned; inferential gaps are limited and material contradictions are absent or resolved. |
+| 4 | The reasoning chain is explicit and continuous; central claims have proportionate support, transitions are defensible, and conclusions remain within the evidence. |
+
+**Developmental Consistency (D) — weight 0.30**
+
+| Score | Anchor |
+|---:|---|
+| 0 | The content is fundamentally fragmented; central conceptual shifts occur without a connecting rationale. |
+| 1 | Stages are mostly juxtaposed rather than developed from one another; major discontinuities are frequent. |
+| 2 | Some stages connect and develop, but important parts of the argument stall or remain discontinuous. |
+| 3 | Stages generally build on one another; refinements and revisions are traceable, with only limited unexplained gaps. |
+| 4 | The internal progression is clear; each stage extends, sharpens, or justifiably revises prior reasoning, producing coherent argumentative development. |
+
+This dimension concerns development within the single content item, not historical change across time.
+
+**Cross-Context Transfer (C) — weight 0.20**
+
+| Score | Anchor |
+|---:|---|
+| 0 | A central transfer is demonstrably invalid; decisive contextual differences are ignored and the main conclusion depends on it. |
+| 1 | Transfers rely mainly on superficial similarities; important differences or validity conditions are not examined. |
+| 2 | Some transfers have a defensible basis, but comparison, contextual differences, or limits of generalization are incompletely handled. |
+| 3 | Transfers are generally valid; relevant similarities and differences are considered and generalizations mostly remain within defensible bounds. |
+| 4 | Transfers have an explicit and rigorous basis; relevant equivalences and decisive differences are identified, boundary conditions are preserved, and validity limits are clear. |
+
+The number of domains or examples is not itself evidence of transfer quality. If no meaningful transfer opportunity exists, mark N/A with a rationale; do not use N/A when an attempted transfer is weak or invalid.
+
+**Reflective Integration (R) — weight 0.10**
+
+| Score | Anchor |
+|---:|---|
+| 0 | Decisive counterevidence or limitations are ignored or distorted, while the conclusion is maintained despite the unresolved conflict. |
+| 1 | Reflection is absent or largely performative; acknowledged limitations or counterevidence have no meaningful effect on the reasoning. |
+| 2 | Some assumptions or limitations are identified, but their integration into reasoning and conclusions is incomplete or uneven. |
+| 3 | Important limitations and counterevidence are examined and meaningfully inform qualification of some claims or conclusions; omissions are limited. |
+| 4 | Assumptions, limitations, and counterevidence are actively evaluated; their effects on claim scope, confidence, and conclusions are explicit, and justified revisions are integrated. |
+
+#### Non-score assessment states
+
+| State | Meaning | Required handling |
+|---|---|---|
+| N/A | The dimension is genuinely inapplicable or no relevant assessment opportunity exists in the content. | Exclude its weight from the denominator, explain why, and renormalize across applicable dimensions. |
+| INSUFFICIENT_EVIDENCE | The dimension is applicable, but available evidence is insufficient for a defensible score. | Do not assign a numeric score; identify what evidence is missing. |
+| NOT_ASSESSED | The dimension has not been evaluated. | Do not treat as N/A or as zero. |
+| NOT_SCORABLE | No dimension can be defensibly scored. | Do not report a numeric D2-SI. |
+| 0 | Sufficient evidence demonstrates fundamental failure in that dimension. | Provide the specific supporting evidence. |
+
+#### Evidence record and adjudication
+
+For each dimension, record: raw score (or non-score state), applicability, specific textual evidence or location, rationale for the selected anchor, material counterevidence or defect, and evaluator confidence. When evaluators disagree, resolve the disagreement by comparing evidence and anchor interpretation; do not automatically average their scores. The final adjudicated score and its rationale must be recorded.
+
+#### Boundary and overlap controls
+
+A change of position is not automatically a contradiction; a reasoned revision may support Developmental Consistency. Cross-context quality is not measured by domain count. A statement of humility alone does not establish Reflective Integration. Assign each defect to the dimension that most directly captures it; apply multiple penalties only where distinct evidence establishes distinct failures. Missing information must not be converted into a score of 0.
+
+
+**Scope and provenance:** This proposed 0.40/0.30/0.20/0.10 decomposition is not BIO v1.0's canonical longitudinal subcriterion formula. It does not change D2's official weight of 0.18. Label the result D2-SI, never as proof of longitudinal continuity, stability, persistence, or historical development. Missing longitudinal evidence is not itself a defect. The conversion `(D2-SI / 4) × 18` is valid only if the canonical aggregate normalizes criterion scores before aggregation; it does not define the full BSI aggregation.
 
 `D2 = 0.40 × Trajectory_Stability
    + 0.30 × Contradiction_Resolution_Rate
@@ -175,9 +311,7 @@ A single input must not be used to fabricate longitudinal claims.
 
 ### Unresolved implementation detail
 
-The complete canonical handling of D2 when only a single input is available requires explicit specification.
-
-Until resolved, the execution architecture must not invent longitudinal evidence, trajectories, contradictions, or stability claims.
+**RESOLVED by explicit owner decision (2026-10-31):** for a single-content analysis, D2 is assessed using internal coherence only. No longitudinal trajectory, stability, or development claim may be inferred from one input. Missing longitudinal evidence is not itself a defect. This does not change D2's canonical weight (0.18) or redefine its subcriteria; it defines the single-input evidence-availability path.
 
 EIG's Longitudinal Consistency Gap remains an interpretive lens and must not be converted into causal claims.
 
@@ -189,7 +323,9 @@ EIG's Longitudinal Consistency Gap remains an interpretive lens and must not be 
 
 The BSI penalty mechanism uses:
 
-`EIG_penalty = EIG_avg / 10`
+`EIG_penalty = EIG_avg / 20`
+
+This is the explicit owner-approved calibration decision confirmed on 2026-10-31. It supersedes the former `/10` penalty mapping for implementation. The EIG gap weights and 0–10 gap scale remain unchanged; maximum penalty is 0.5.
 
 where `EIG_avg` is a weighted average of applicable EIG gaps on the 0–10 scale.
 
@@ -352,7 +488,7 @@ The following items remain unresolved and must be explicitly specified before im
 
 ### U1 — Nonlinear BSI activation threshold
 
-The exact authoritative condition for selecting nonlinear BSI calculation remains unresolved.
+**Status: intentionally unresolved by owner decision (2026-10-31).** Keep the activation threshold open. Do not invent a threshold or infer one automatically. Until an authoritative decision is made, the execution architecture must disclose the limitation and must not silently select a mode.
 
 ### D2 — Legacy 60% Longitudinal Rule — Deprecated
 
@@ -415,7 +551,7 @@ The canonical D2 weight remains `0.18`.
 
 ### U3 — Single-input longitudinal semantics — RESOLVED
 
-A single input is sufficient to execute the canonical **Single-Input Coherence Path** for structural/internal coherence analysis, but it is not sufficient to establish longitudinal continuity, trajectory, development, persistence, or change across time.
+**Owner confirmation (2026-10-31):** for a single-content analysis, assess internal coherence only. A single input is not sufficient to establish longitudinal continuity, trajectory, development, persistence, or change across time.
 
 Accordingly:
 
@@ -492,3 +628,9 @@ Its purpose is to expose and resolve semantic dependencies before implementation
 No benchmark, comparison, ranking, winner determination, external judge, or competitive evaluation is part of this repository's analytical architecture.
 
 The repository remains dedicated exclusively to BSI analysis.
+
+
+**Double-penalty traceability control:** the implementation also exposes `validate_d2_si_penalty_attribution()`. If one defect identifier is assigned to multiple dimensions, each cross-dimension entry must cite a distinct evidence identifier and its own rationale. This is a mechanical traceability check only; it cannot determine whether the evidence semantically proves distinct failures. Human/evaluator adjudication remains required.
+
+
+**Runtime integration:** `run_v35_scoring()` accepts optional `d2_si_scores` for `single_content` only. When supplied, it calculates D2-SI, normalizes it to the 0–100 engine scale, and requires the supplied `dimension_scores["D2"]` to match. It returns the D2-SI assessment separately. The optional field is rejected for `longitudinal_corpus`; the canonical longitudinal D2 path remains distinct. Existing callers that omit `d2_si_scores` retain the prior explicit-input contract.
