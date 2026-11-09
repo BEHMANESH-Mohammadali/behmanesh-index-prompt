@@ -15,8 +15,6 @@ from core.bsi_scoring_v35 import (
     EIG_WEIGHTS,
     ScoringInputError,
     calculate_bsi,
-    calculate_d2_si,
-    d2_si_to_normalized_score,
     calculate_ecc_gaps,
     calculate_eig,
     calculate_reig,
@@ -68,24 +66,11 @@ def run_v35_scoring(assessment: Mapping[str, Any]) -> dict:
             "D2 assessment basis does not match content_scope."
         )
 
-    d2_si_result = None
     if "d2_si_scores" in assessment:
-        if content_scope != "single_content":
-            raise ScoringInputError("D2-SI is only applicable to single_content assessments.")
-        d2_si_result = calculate_d2_si(assessment["d2_si_scores"])
-        normalized_d2 = d2_si_to_normalized_score(d2_si_result)
-        dimension_input = assessment["dimension_scores"]
-        if not isinstance(dimension_input, Mapping):
-            raise ScoringInputError("dimension_scores must be a mapping.")
-        supplied_d2 = dimension_input.get("D2")
-        if (
-            isinstance(supplied_d2, bool)
-            or not isinstance(supplied_d2, (int, float))
-            or abs(float(supplied_d2) - normalized_d2) > 1e-6
-        ):
-            raise ScoringInputError(
-                "dimension_scores['D2'] must equal the normalized D2-SI result when d2_si_scores is supplied."
-            )
+        raise ScoringInputError(
+            "D2-SI is a non-canonical research operationalization and cannot be used as the D2 scoring input. "
+            "For single_content, assess D2 internal coherence only."
+        )
 
     eig = calculate_eig(
         assessment["eig_gaps"],
@@ -126,7 +111,6 @@ def run_v35_scoring(assessment: Mapping[str, Any]) -> dict:
         "assessment_mode": "EXPLICIT_EVIDENCE_BACKED_INPUTS",
         "content_scope": content_scope,
         "D2_assessment_basis": d2_basis,
-        "D2-SI": d2_si_result,
         "BSI": bsi,
         "EIG": eig,
         "ECC": ecc,
