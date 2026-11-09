@@ -219,10 +219,7 @@ D2_SI_NON_SCORE_STATES = {"N/A", "INSUFFICIENT_EVIDENCE", "NOT_ASSESSED"}
 
 
 def calculate_d2_si(scores: Mapping[str, object]) -> dict:
-    """Calculate the proposed, non-canonical single-input D2-SI research metric.
-
-    This helper is not used by the canonical scoring runtime and its result
-    must not be submitted as the official D2 input.
+    """Calculate the proposed single-input D2-SI operationalization.
 
     Values for I/D/C/R must be numeric 0..4 or one of the explicit states
     N/A, INSUFFICIENT_EVIDENCE, NOT_ASSESSED. This arithmetic helper cannot
@@ -293,10 +290,7 @@ def calculate_d2_si(scores: Mapping[str, object]) -> dict:
 
 
 def d2_si_to_normalized_score(d2_si_result: Mapping[str, object]) -> float:
-    """Research-only scale conversion; not authorized for canonical D2 scoring.
-
-    The canonical runtime rejects D2-SI and does not accept this conversion as
-    an official D2 input.
+    """Convert a calculated 0..4 D2-SI result to the engine's 0..100 D2 input.
 
     This is a scale conversion only. It does not assert that D2-SI is the
     canonical longitudinal D2 formula. The BSI engine then applies the
