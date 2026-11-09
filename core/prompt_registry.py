@@ -42,6 +42,8 @@ def _load_integrity_manifest() -> dict[str, str]:
         manifest = json.loads(path.read_text(encoding="utf-8"))
         if manifest.get("schema") != "bsi-v35-content-integrity/v1":
             raise ValueError("Unsupported integrity manifest schema.")
+        if manifest.get("framework_version") != PROMPT_VERSION:
+            raise ValueError("Integrity manifest framework version does not match the prompt registry.")
         files = manifest.get("files")
         if not isinstance(files, dict) or not files:
             raise ValueError("Integrity manifest has no file hashes.")
