@@ -59,10 +59,10 @@ def _read_verified(relative_path: str, expected_hashes: dict[str, str]) -> dict[
     if not path.is_file():
         raise PromptPackageError(f"Required BSI v3.5 file is missing: {relative_path}")
     try:
-        content = path.read_text(encoding="utf-8")
+        encoded = path.read_bytes()
+        content = encoded.decode("utf-8")
     except (OSError, UnicodeError) as exc:
         raise PromptPackageError(f"Cannot read required file {relative_path}: {exc}") from exc
-    encoded = content.encode("utf-8")
     digest = hashlib.sha256(encoded).hexdigest()
     expected_git_blob = expected_hashes.get(relative_path)
     actual_git_blob = hashlib.sha1(
