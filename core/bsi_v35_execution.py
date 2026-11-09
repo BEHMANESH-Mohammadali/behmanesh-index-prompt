@@ -490,11 +490,10 @@ def execute_bsi_v35(task: Mapping[str, Any]) -> dict[str, Any]:
             "content_scope": task_scope,
             "d2_assessment_basis": "internal_coherence_only" if task_scope == "single_content" else "longitudinal_evidence",
             "ecc": {k: ecc_result[k] for k in ("claimed_confidence", "supported_evidence", "supported_method", "supported_conclusion")},
+            "reig": audit.get("scores"),
         }
         if d2_si_scores is not None:
             assessment["d2_si_scores"] = d2_si_scores
-            "reig": audit.get("scores"),
-        }
         response["scoring"] = run_v35_scoring(assessment)
         response["status"] = "COMPLETED_WITH_EXPLICIT_ASSESSMENTS"
     except (ScoringInputError, KeyError, TypeError) as exc:
