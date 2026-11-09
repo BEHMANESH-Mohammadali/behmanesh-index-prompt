@@ -2,8 +2,8 @@
 
 **Review date:** 2026-11-10  
 **Reviewed branch:** `work/bsi-v3.5-minimal-audit-fixes`  
-**Reviewed tree:** `c687bc5e2147ecdf9dd1ca39dce10ce7f35d8b7a`  
-**Automated test commit:** `d9efb8c7d7d38d92c94f480ab826eee5dde800ce`  
+**Reviewed tree after guarded-execution integration:** `c3879ee042837eff6f933421ecb8411cd02370f2`  
+**Automated test commit:** `c3879ee042837eff6f933421ecb8411cd02370f2`  
 **Scope:** Canonical BSI v3.5 prompt package, scoring/runtime, execution lifecycle, documentation consistency, package integrity, and repository test evidence.
 
 This is a control review, not a claim that every file in the repository was read line by line, that the framework has independent empirical validation, or that a successful test suite proves the truth or quality of supplied assessments.
@@ -30,12 +30,12 @@ This is a control review, not a claim that every file in the repository was read
 | ID | Control requirement | Evidence checked | Status | Finding |
 |---|---|---|---|---|
 | C-06 | Preserve official D2 identity and weight 0.18. | Master Prompt, canonical matrix, formula, `BSI_WEIGHTS`, scoring tests. | PASS | D2 remains LongitudinalCoherence at 0.18. |
-| C-07 | Retain a numeric single-content D2-SI path rather than forcing D2 to be absent or silently imputed. | `calculate_d2_si()`, `d2_si_to_normalized_score()`, `run_v35_scoring()`, D2-SI tests. | PASS | Optional `d2_si_scores` are accepted for `single_content`; the calculated result is normalized to 0–100 and must match the supplied D2 input. |
+| C-07 | Retain a numeric single-content D2-SI path when explicitly supplied and authorized, without inferring it from content scope. | `calculate_d2_si()`, `d2_si_to_normalized_score()`, `run_v35_scoring()`, guarded execution tests. | PASS | The model-assisted path forwards only an explicit `d2_si_scores` payload with dimension-specific evidence. The deterministic runtime normalizes it and checks equality with the supplied D2 input. Omission preserves the 31 October internal-coherence-only basis. |
 | C-08 | Preserve the proposed D2-SI subdimension weights and scale. | Master Prompt, canonical matrix, hybrid formula, scoring tests. | PASS | I/D/C/R = 0.40/0.30/0.20/0.10; scores are 0–4; applicable dimensions are renormalized only for genuine N/A. |
 | C-09 | Never convert N/A-only, insufficient-evidence, or not-assessed states into fabricated numeric zeroes. | `calculate_d2_si()`, normalization guard, tests for non-score states and all-N/A. | PASS | Non-calculated states return no numeric D2-SI and cannot be normalized. |
 | C-10 | Prevent D2-SI from being mistaken for proof of longitudinal continuity, persistence, or historical development. | Master Prompt D2-SI scope language; formula and matrix provenance language; runtime scope check. | PASS | D2-SI is explicitly a constrained single-input operationalization, not BIO v1.0's canonical longitudinal D2 formula. It is rejected for `longitudinal_corpus`. |
-| C-11 | Resolve the relationship between the earlier “internal coherence only” owner decision and the later stated D2-SI intent. | Canonical matrix single-content resolution (2026-10-31); release manifest; current D2-SI four-dimension rubric; runtime `d2_assessment_basis`. | OPEN | The earlier recorded decision says single-content D2 is assessed using internal coherence only. The D2-SI rubric also includes Developmental Consistency, Cross-Context Transfer, and Reflective Integration. The later owner clarification states that D2-SI was designed to retain a defensible numeric D2 result for one content item. These positions are not yet reconciled in the canonical decision record. The runtime still labels the single-content basis `internal_coherence_only` even when D2-SI is supplied. This review preserves the history and does not silently rewrite the owner decision. |
-| C-12 | Verify that the guarded model-assisted execution path applies D2-SI when the analysis is single-content. | `core/bsi_v35_execution.py` assessment construction and `run_v35_scoring()` call; README runtime limitation. | PARTIAL | The deterministic scoring runtime supports D2-SI. The guarded `/bsi/execute` path currently passes the seven explicit dimension scores and single-content basis but does not forward a `d2_si_scores` payload. It therefore does not automatically use the D2-SI path. README now discloses this limitation. |
+| C-11 | Preserve the 31 October single-content D2 definition while recording the later D2-SI explanation without superseding it. | Canonical matrix single-content resolution (2026-10-31); owner clarification (2026-11-10); runtime basis validation and execution tests. | PASS | The 31 October rule remains governing: single-content D2 basis is `internal_coherence_only`. The later explanation is additive context about the purpose of retaining a defensible numeric D2 result; it does not authorize activating all four D2-SI dimensions or inferring D2-SI from a single input. No longitudinal claim is derived from one content item. |
+| C-12 | Align guarded model-assisted execution with deterministic scoring for an explicitly supplied, evidence-backed D2-SI payload. | `core/bsi_v35_execution.py`, `core/bsi_v35_runtime.py`, D2-SI evidence gate, positive and negative execution tests. | PASS | `/bsi/execute` forwards the optional payload only for `single_content`, requires evidence for I/D/C/R, preserves `internal_coherence_only`, and delegates normalization and D2 equality validation to `run_v35_scoring()`. It does not infer D2-SI when the payload is absent. Missing D2-SI-specific evidence blocks scoring when a payload is supplied. |
 
 ## C. Epistemic and scoring invariants
 
@@ -69,15 +69,15 @@ This is a control review, not a claim that every file in the repository was read
 
 ## F. Actual automated validation
 
-**GitHub Actions run:** [Run #157 — BSI v3.5 validation](https://github.com/BEHMANESH-Mohammadali/behmanesh-index-prompt/actions/runs/42709313086)  
-**Tested commit:** `d9efb8c7d7d38d92c94f480ab826eee5dde800ce`  
+**GitHub Actions run:** [Run #158 — BSI v3.5 validation](https://github.com/BEHMANESH-Mohammadali/behmanesh-index-prompt/actions/runs/42711754847)  
+**Tested commit:** `c3879ee042837eff6f933421ecb8411cd02370f2`  
 **Python:** 3.12.16
 
 | Validation step | Actual result |
 |---|---|
 | Dependency installation | Passed |
 | `python -m compileall -q api core` | Passed |
-| `python -m pytest -q` | **73 passed, 0 failed** |
+| `python -m pytest -q` | **75 passed, 0 failed** |
 | Pytest warnings | 3 deprecation warnings |
 
 Warnings recorded:
@@ -87,7 +87,7 @@ Warnings recorded:
 
 These warnings did not fail the run. They are maintenance notices, not evidence of a BSI scoring failure, and no unrelated changes were made to address them.
 
-The tested commit contains the restored D2-SI runtime and test code. After that run, the only changes were a README clarification and restoration of the workflow's original branch filters; no Python source or test file changed after the successful run.
+The tested commit includes the guarded D2-SI forwarding implementation and two new execution-path regression tests: one confirms successful forwarding and deterministic normalization; the other confirms that missing dimension-specific D2-SI evidence blocks scoring. After that run, only this control-matrix document and restoration of the workflow's original branch filters were changed; no Python source or test file changed.
 
 ## G. Validation not established by this run
 
@@ -98,7 +98,7 @@ The tested commit contains the restored D2-SI runtime and test code. After that 
 | Live provider/model conformance and real-world source coverage | NOT CLAIMED | Test fixtures and unit/integration tests do not establish live-provider quality. |
 | Durable execution-trace persistence | NOT CLAIMED | In-memory trace is not durable persistence. |
 | Independent human/third-party validation | NOT CLAIMED | Repository CI is not independent validation. |
-| End-to-end D2-SI scoring through `/bsi/execute` | PARTIAL | Direct deterministic runtime is tested; guarded execute path does not yet forward D2-SI. |
+| End-to-end D2-SI scoring through `/bsi/execute` | PASS (explicit payload path) | The guarded path forwards explicitly supplied evidence-backed D2-SI and uses the deterministic normalizer/equality check. Automatic inference from raw text remains intentionally unsupported. |
 
 ## Overall disposition
 
@@ -106,7 +106,7 @@ The tested commit contains the restored D2-SI runtime and test code. After that 
 - **Canonical package integrity:** PASS (15/15 pinned files matched).
 - **Release branch protection by separation:** PASS (release head unchanged).
 - **D2-SI numerical calculation in deterministic runtime:** PASS.
-- **D2-SI single-content governance wording:** OPEN (C-11).
-- **D2-SI through guarded `/bsi/execute`:** PARTIAL (C-12).
+- **D2-SI single-content governance wording:** PASS; 31 October definition remains authoritative, later explanation is additive.
+- **D2-SI through guarded `/bsi/execute`:** PASS for explicitly supplied, evidence-backed payloads (C-12).
 
 **No release promotion is authorized by this report.** Resolve C-11 explicitly, decide whether the guarded execution endpoint must forward D2-SI, then add targeted regression coverage before merging. Do not alter official weights or the BIO v1.0 definition as part of that resolution.
