@@ -1,7 +1,11 @@
 import pytest
 
 from core.execution_contract import MANDATORY_STAGES
-from core.bsi_v35_execution import build_bsi_v35_handlers, task_intake, evidence_retrieval_or_gap_record
+from core.bsi_v35_execution import (
+    build_bsi_v35_handlers, task_intake, evidence_retrieval_or_gap_record,
+    structural_analysis, assumption_excavation,
+)
+from core.execution_orchestrator import StageResult
 
 
 def test_canonical_registry_has_exact_handler_coverage_and_gate_is_external():
@@ -39,6 +43,12 @@ def test_task_intake_candidate_artifacts_are_reused_by_retrieval(monkeypatch):
     intake = task_intake({"task": {"text": text}})
     context = {"task": {"text": text}, "task_intake": intake.output}
     retrieval = evidence_retrieval_or_gap_record(context)
+    monkeypatch.setattr(
+        "core.bsi_v35_execution._call_model",
+        lambda *args, **kwargs: StageResult(output={"accepted": True, "payload": args[3]}),
+    )
+    structural_analysis({**context, "competing_interpretations": {"interpretations": ["A", "B"]}})
+    assumption_excavation({**context, "structural_analysis": {"core_claim": "candidate claim"}})
 
     assert retrieval.output["candidate_core_claim"] == "candidate claim"
     assert calls == {"claim": 1, "assumptions": 1, "domain": 1}
