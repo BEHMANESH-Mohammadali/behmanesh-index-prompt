@@ -37,11 +37,15 @@ The loader fails closed if a required reference is missing. It does not itself c
 
 ## Runtime status — important
 
-**The canonical prompt package is v3.5. The existing deterministic scoring engine and legacy pipeline are not yet a faithful implementation of BSI v3.5.**
+The canonical prompt package and framework specification are **BSI v3.5**. The API exposes three distinct capabilities that must not be conflated:
 
-Existing scoring endpoints continue to use legacy v3.4.x logic. They must not be represented as v3.5 scoring. The API health/version metadata explicitly identifies this limitation. Full v3.5 execution requires a downstream LLM generator integration and a separately validated implementation of any computational scoring components whose semantics are fully specified.
+- **Prompt package — `GET /bsi/prompt`:** serves the canonical Master Prompt and required references with SHA-256 digests. It does not execute an LLM or calculate scores.
+- **Explicit-input scoring — `POST /bsi/score`, `/bsi/analyze`, and `/bsi/compare`:** uses the v3.5 deterministic calculator on assessor-supplied, evidence-backed inputs. It does not infer D1–D7 or EIG scores from raw text. Single-content D2 is internal coherence only; longitudinal claims require longitudinal evidence.
+- **Guarded model-assisted execution — `POST /bsi/execute`:** orchestrates the configured model stages and blocks completion when mandatory evidence or execution gates remain unresolved. This is not independent validation.
 
-In particular, unresolved semantics documented in the Canonical Specification Matrix must not be filled with invented weights, formulas, or substitute algorithms.
+The legacy `core/bsi_pipeline.py` remains a v3.4.2 lineage artifact and is not the v3.5 scoring runtime. None of these capabilities should be described as an independently validated, fully autonomous implementation of the entire BSI framework.
+
+D2-SI is retained only as a proposed research operationalization; it is not accepted as a canonical D2 scoring input. Unresolved semantics in the Canonical Specification Matrix must not be filled with invented weights, formulas, or substitute algorithms.
 
 ## Versioning and archives
 
