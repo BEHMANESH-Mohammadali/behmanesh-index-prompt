@@ -1,6 +1,6 @@
 # Canonical Specification Matrix — BSI v3.5
 
-**Status:** Working Canonicalization Specification  
+**Status:** Canonical decision matrix — unresolved items remain explicitly non-operative  
 **Purpose:** Resolve authoritative semantics before implementation changes  
 **Scope:** BSI v3.5 analytical architecture only
 
@@ -171,13 +171,9 @@ If calculation mode cannot be established from the authoritative specification, 
 
 
 
-### D2-SI Implementation and Aggregation Boundary
+### D2-SI Implementation Boundary
 
-The deterministic scoring module exposes `calculate_d2_si()` for the proposed 0–4 D2-SI arithmetic and `d2_si_to_normalized_score()` for the explicit scale conversion `(D2-SI / 4) × 100`. The converted value may be supplied as the D2 input to the existing BSI aggregator, which retains the official D2 weight of 0.18. This is a scale bridge, not a change to canonical longitudinal D2 or BIO v1.0. Non-calculated states (including N/A-only NOT_SCORABLE, INSUFFICIENT_EVIDENCE, and NOT_ASSESSED) cannot be converted into a numeric D2 score.
-
-The helper validates numeric ranges, state labels, applicability, and arithmetic. It does not independently verify textual evidence, select anchors, adjudicate evaluators, or determine whether multiple penalties are justified. Those remain evidence-layer responsibilities and must be documented in the assessment record. In particular, the same underlying defect must not be counted in multiple dimensions without distinct evidence for each asserted failure.
-
-**Validation status:** unit tests cover weighted arithmetic, N/A renormalization, non-score states, invalid inputs, scale conversion, and preservation of the official 0.18 D2 aggregation weight. Test execution and inter-rater calibration are separate validation steps; passing arithmetic tests alone does not establish anchor reliability or evaluator agreement.
+D2-SI v0.2 is a proposed research operationalization only. It is not part of canonical D2, must not be supplied to the canonical scoring runtime, and must not be normalized or aggregated into the official BSI score. The canonical single-content path is an evidence-bounded assessment of internal coherence only. The canonical D2 weight remains 0.18; longitudinal trajectory, persistence, or development requires temporally distinct evidence. The research proposal and its arithmetic may be retained for separate study, clearly labelled non-canonical.
 
 ## 5. LONGITUDINAL HANDLING
 
@@ -633,4 +629,4 @@ The repository remains dedicated exclusively to BSI analysis.
 **Double-penalty traceability control:** the implementation also exposes `validate_d2_si_penalty_attribution()`. If one defect identifier is assigned to multiple dimensions, each cross-dimension entry must cite a distinct evidence identifier and its own rationale. This is a mechanical traceability check only; it cannot determine whether the evidence semantically proves distinct failures. Human/evaluator adjudication remains required.
 
 
-**Runtime integration:** `run_v35_scoring()` accepts optional `d2_si_scores` for `single_content` only. When supplied, it calculates D2-SI, normalizes it to the 0–100 engine scale, and requires the supplied `dimension_scores["D2"]` to match. It returns the D2-SI assessment separately. The optional field is rejected for `longitudinal_corpus`; the canonical longitudinal D2 path remains distinct. Existing callers that omit `d2_si_scores` retain the prior explicit-input contract.
+**Runtime boundary:** `run_v35_scoring()` rejects `d2_si_scores`. Single-content D2 must be supplied as an evidence-backed internal-coherence assessment through the ordinary D2 input. The scoring runtime does not calculate or aggregate D2-SI.
