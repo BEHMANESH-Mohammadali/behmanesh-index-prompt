@@ -96,11 +96,18 @@ def task_intake(context: Mapping[str, Any]) -> StageResult:
     if len(text.strip()) < 10:
         return StageResult(output={"blocked": True, "block_reason": "Target text is missing or shorter than 10 characters."})
     task = _task(context)
+    # Compute lightweight legacy candidates once and reuse them downstream.
+    candidates = {
+        "core_claim": extract_core_claim(text),
+        "assumptions": excavate_assumptions(text),
+        "detected_domain": detect_domain(text),
+    }
     return StageResult(output={
         "task_type": task.get("task_type", "structural_analysis"),
         "target_id": task.get("target_id"),
         "text_length": len(text),
-        "domain": task.get("domain") or detect_domain(text),
+        "domain": task.get("domain") or candidates["detected_domain"],
+        "candidate_artifacts": candidates,
         "external_verification_requested": bool(task.get("external_verification", True)),
         "unresolved_t8": False,
     })
@@ -150,7 +157,9 @@ def evidence_retrieval_or_gap_record(context: Mapping[str, Any]) -> StageResult:
     if not text.strip():
         return StageResult(output={"blocked": True, "block_reason": "No target text available."})
     try:
-        claim = extract_core_claim(text)
+        intake = context.get("task_intake", {})
+        candidates = intake.get("candidate_artifacts", {}) if isinstance(intake, Mapping) else {}
+        claim = candidates.get("core_claim") or extract_core_claim(text)
         rag = evaluate_claim_with_rag(claim)
         enabled = bool(rag.get("enabled"))
         sources = int(rag.get("retrieved_sources", 0) or 0)
@@ -200,12 +209,18 @@ def structural_analysis(context: Mapping[str, Any]) -> StageResult:
     prior = context.get("competing_interpretations", {})
     if not isinstance(prior, Mapping) or prior.get("blocked"):
         return StageResult(output={"blocked": True, "block_reason": "Competing-interpretation stage is blocked."})
+    intake = context.get("task_intake", {})
+    candidates = intake.get("candidate_artifacts", {}) if isinstance(intake, Mapping) else {}
+    if not candidates:
+        candidates = {
+            "core_claim": extract_core_claim(text),
+            "assumptions": excavate_assumptions(text),
+            "detected_domain": detect_domain(text),
+        }
     return _call_model(context, "analyst",
         "Perform BSI v3.5 structural analysis using the canonical prompt package. Return JSON with core_claim, manifest_layer, latent_layer, meta_layer, mechanisms, feedback_loops, leverage_points, claim_evidence_inference_graph, direct_statements, historical_reports, observations, inferences, hypotheses, counterevidence, uncertainty, limitations. Do not fabricate sources or scores.",
         {"target_text": text, "competing_interpretations": prior,
-         "legacy_engine_extract": {"core_claim": extract_core_claim(text),
-                                   "assumptions": excavate_assumptions(text),
-                                   "domain": detect_domain(text)}})
+         "legacy_engine_extract": candidates})
 
 
 def verification(context: Mapping[str, Any]) -> StageResult:
@@ -240,10 +255,15 @@ def verification(context: Mapping[str, Any]) -> StageResult:
 def assumption_excavation(context: Mapping[str, Any]) -> StageResult:
     text = _text(context)
     analysis = context.get("structural_analysis", {})
+    intake = context.get("task_intake", {})
+    candidates = intake.get("candidate_artifacts", {}) if isinstance(intake, Mapping) else {}
+    assumptions = candidates.get("assumptions")
+    if assumptions is None:
+        assumptions = excavate_assumptions(text)
     return _call_model(context, "analyst",
         "Excavate explicit and implicit assumptions, rank only by their role in the argument (not invented numeric weights), provide counterfactual tests, and distinguish author-stated assumptions from analyst-inferred assumptions. Return JSON with assumptions, counterfactual_tests, author_stated, analyst_inferred, uncertainty.",
         {"target_text": text, "draft_analysis": analysis,
-         "legacy_heuristic_candidates": excavate_assumptions(text)})
+         "legacy_heuristic_candidates": assumptions})
 
 
 def eig(context: Mapping[str, Any]) -> StageResult:
