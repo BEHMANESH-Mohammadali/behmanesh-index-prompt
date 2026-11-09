@@ -290,7 +290,7 @@ For each dimension, record: raw score (or non-score state), applicability, speci
 A change of position is not automatically a contradiction; a reasoned revision may support Developmental Consistency. Cross-context quality is not measured by domain count. A statement of humility alone does not establish Reflective Integration. Assign each defect to the dimension that most directly captures it; apply multiple penalties only where distinct evidence establishes distinct failures. Missing information must not be converted into a score of 0.
 
 
-**Scope and provenance:** This proposed 0.40/0.30/0.20/0.10 decomposition is not BIO v1.0's canonical longitudinal subcriterion formula. It does not change D2's official weight of 0.18. Label the result D2-SI, never as proof of longitudinal continuity, stability, persistence, or historical development. Missing longitudinal evidence is not itself a defect. The conversion `(D2-SI / 4) × 18` is valid only if the canonical aggregate normalizes criterion scores before aggregation; it does not define the full BSI aggregation.
+**Scope and provenance:** This proposed 0.40/0.30/0.20/0.10 decomposition is not BIO v1.0's canonical longitudinal subcriterion formula. It does not change D2's official weight of 0.18. Label the research result D2-SI; never present it as proof of longitudinal continuity, stability, persistence, or historical development. Missing longitudinal evidence is not itself a defect. Any scale conversion described here is a mathematical research note only and is not authorized as a canonical D2 input or as a contribution to the official BSI aggregate.
 
 `D2 = 0.40 × Trajectory_Stability
    + 0.30 × Contradiction_Resolution_Rate
