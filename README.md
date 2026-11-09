@@ -45,7 +45,7 @@ The canonical prompt package and framework specification are **BSI v3.5**. The A
 
 The legacy `core/bsi_pipeline.py` remains a v3.4.2 lineage artifact and is not the v3.5 scoring runtime. None of these capabilities should be described as an independently validated, fully autonomous implementation of the entire BSI framework.
 
-D2-SI is retained only as a proposed research operationalization; it is not accepted as a canonical D2 scoring input. Unresolved semantics in the Canonical Specification Matrix must not be filled with invented weights, formulas, or substitute algorithms.
+For `single_content`, the deterministic scoring runtime accepts optional, evidence-backed `d2_si_scores` (I/D/C/R), calculates the proposed 0–4 D2-SI result, normalizes it to the 0–100 D2 input scale, and verifies that it matches the supplied D2 dimension score. This is a constrained single-input operationalization, not BIO v1.0's canonical longitudinal D2 formula; it does not establish longitudinal continuity or historical development, and it does not change D2's official 0.18 weight. Non-calculated states are not converted into numeric scores. The guarded `/bsi/execute` path does not currently derive D2-SI automatically from raw text; it requires explicit, evidence-backed scoring inputs. Unresolved semantics in the Canonical Specification Matrix must not be filled with invented weights, formulas, or substitute algorithms.
 
 ## Versioning and archives
 
