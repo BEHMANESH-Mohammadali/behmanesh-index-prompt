@@ -1,0 +1,20 @@
+{
+  "schema": "bsi-v35-content-integrity/v1",
+  "framework_version": "3.5",
+  "branch_baseline": "release/bsi-v3.5",
+  "note": "Expected Git blob SHA-1 values for canonical prompt package files. This manifest intentionally does not hash itself.",
+  "files": {
+    "MASTER_PROMPT_BSI_v3.5.md": "60500474291c8ef46fcda253970e479c8f1b7c98",
+    "ARCHITECTURAL_INVARIANTS_BSI_v3.5.md": "e27b434884a2880bfc25547eb694dceb70edb59e",
+    "BSI_3.5_Execution_Architecture.md": "822c86d5bacc0c898016c6978949ed8149e62221",
+    "docs/specification/ANALYTICAL_OUTPUT_CONTRACT_LAYERC_v3.5.md": "3183425df98e49ed2236ccf95d3f53dbfb8b5af4",
+    "docs/specification/CANONICAL_SPECIFICATION_MATRIX_v3.5.md": "fe93d1f03b674fb8fa09d868c14adcd6e4f5b533",
+    "CORE-BEHMANESH/v1.0/CORE_BEHMANESH_v1.0.md": "36a724b6de5e1cd5b89cc324d2eef66de2099701",
+    "Ontology/BIO_v1.0.md": "5d76279feff09bcd71c45e1bbce2087729f7669e",
+    "SOP_Intellectual_Content_Analysis_v3.4.2.md": "cf14b3429cd2ddcd4bc002dfc47396c186d4f021",
+    "CORE-BEHMANESH/Shared_Components/EIG/Epistemic_Integrity_Gap_Analyzer_v1.0.md": "e2db2b4520de680f50ef68b97f555806fcb05cb4",
+    "CORE-BEHMANESH/Shared_Components/EIG/Epistemic_Confidence_Calibration_v2.0.md": "a6daab3f3d1ae874e503c4e48e395c690f686dc8",
+    "CORE-BEHMANESH/Shared_Components/EIG/Recursive_EIG_v1.0.md": "8aa810994bb4dba758d44130a1496220e15917e8",
+    "BSI_Calculation_Formula_Hybrid_v3x.md": "d03f652742e1d237de29ba43537f8c55f51e9a0f"
+  }
+}
