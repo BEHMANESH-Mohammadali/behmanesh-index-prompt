@@ -444,6 +444,12 @@ def execute_bsi_v35(task: Mapping[str, Any]) -> dict[str, Any]:
     task_scope = _task({"task": task}).get("content_scope", "single_content")
     dimension_scores = task.get("dimension_scores")
     dimension_evidence = task.get("dimension_score_evidence")
+    # D2-SI is an optional, explicitly supplied scoring payload. Do not infer it
+    # merely from single_content scope: the governing single-content D2 basis
+    # remains internal_coherence_only unless a separately authorized payload
+    # and its evidence basis are supplied.
+    d2_si_scores = task.get("d2_si_scores")
+    d2_si_evidence = task.get("d2_si_score_evidence")
     eig_basis = eig_result.get("evidence_for_each_gap") if isinstance(eig_result, Mapping) else None
     ecc_basis = ecc_result.get("evidence_basis") if isinstance(ecc_result, Mapping) else None
     reig_basis = audit.get("evidence_for_each_dimension") if isinstance(audit, Mapping) else None
@@ -459,6 +465,12 @@ def execute_bsi_v35(task: Mapping[str, Any]) -> dict[str, Any]:
     if (not isinstance(dimension_scores, Mapping)
             or not set(required_dimensions).issubset(dimension_scores)
             or not _has_basis(dimension_evidence, required_dimensions)
+            or (d2_si_scores is not None and (
+                task_scope != "single_content"
+                or not isinstance(d2_si_scores, Mapping)
+                or set(d2_si_scores) != {"I", "D", "C", "R"}
+                or not _has_basis(d2_si_evidence, ("I", "D", "C", "R"))
+            ))
             or not isinstance(eig_result, Mapping) or not eig_result.get("ready_for_scoring")
             or not _has_basis(eig_basis, required_eig)
             or not isinstance(ecc_result, Mapping) or not ecc_result.get("ready_for_scoring")
@@ -478,6 +490,9 @@ def execute_bsi_v35(task: Mapping[str, Any]) -> dict[str, Any]:
             "content_scope": task_scope,
             "d2_assessment_basis": "internal_coherence_only" if task_scope == "single_content" else "longitudinal_evidence",
             "ecc": {k: ecc_result[k] for k in ("claimed_confidence", "supported_evidence", "supported_method", "supported_conclusion")},
+        }
+        if d2_si_scores is not None:
+            assessment["d2_si_scores"] = d2_si_scores
             "reig": audit.get("scores"),
         }
         response["scoring"] = run_v35_scoring(assessment)
