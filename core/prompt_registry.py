@@ -64,7 +64,7 @@ def _read_verified(relative_path: str, expected_hashes: dict[str, str]) -> dict[
     digest = hashlib.sha256(encoded).hexdigest()
     expected_git_blob = expected_hashes.get(relative_path)
     actual_git_blob = hashlib.sha1(
-        f"blob {len(encoded)}\\0".encode("ascii") + encoded
+        f"blob {len(encoded)}\0".encode("ascii") + encoded
     ).hexdigest()
     if expected_git_blob is None:
         raise PromptPackageError(f"No pinned integrity hash for required file: {relative_path}")
