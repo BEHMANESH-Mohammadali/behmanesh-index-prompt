@@ -8,6 +8,7 @@ on:
       - "feat/model-agnostic-execution-adapters"
       - "feat/d2-single-input-scoring"
       - "release/bsi-v3.5"
+      - "work/**"
   pull_request:
     branches:
       - main
