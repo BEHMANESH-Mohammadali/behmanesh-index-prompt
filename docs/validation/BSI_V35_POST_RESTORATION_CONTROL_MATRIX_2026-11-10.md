@@ -112,3 +112,12 @@ The tested commit includes the guarded D2-SI forwarding implementation and two n
 - **D2-SI through guarded `/bsi/execute`:** PASS for explicitly supplied, evidence-backed payloads (C-12).
 
 **No release promotion is authorized by this report.** The guarded execution path is validated for explicitly supplied, evidence-backed D2-SI payloads. Before merging, retain the release/backup separation and review the 46-commit branch diff as a whole (14 changed files in the current comparison); this report does not authorize merge, tag, or release. Do not alter official weights or the BIO v1.0 definition.
+
+
+## Addendum — Assumption Excavation integration review (2026-11-10)
+
+- PR #15 (`work/assumption-excavation-completion-2026-11-10`) adds the complete Assumption Excavation Protocol v1.1 to the Master Prompt and separately pins the source protocol in the prompt registry and integrity manifest.
+- The runtime stage now supplies the normative protocol to the model and treats lexical heuristic candidates as leads only. A fail-closed output schema requires conditional formulations, explicit coverage of methodological/modeling/generalizability/value categories, counterfactual tests, assumption rank and evidence labels, Core Claim links, synthesis, and limitations.
+- PR CI run #166 (`42739215522`) passed: Python compilation succeeded and pytest reported 78 passed, 0 failed; 3 non-blocking deprecation warnings.
+- This is repository-level implementation/test evidence only. It does not establish independent Prompt-Only portability, inter-rater reliability, or semantic completeness beyond the protocol's stated limits.
+- PR #15 is open and not merged. The protected `release/bsi-v3.5` branch remains unchanged; no tag or release was created.
