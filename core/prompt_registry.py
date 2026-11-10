@@ -6,12 +6,14 @@ LLM generator. It does not itself execute an LLM or calculate BSI scores.
 from __future__ import annotations
 
 import hashlib
+import json
 from pathlib import Path
 from typing import Any
 
 REPOSITORY_ROOT = Path(__file__).resolve().parents[1]
 PROMPT_VERSION = "3.5"
 PROMPT_PATH = "MASTER_PROMPT_BSI_v3.5.md"
+INTEGRITY_MANIFEST_PATH = "docs/integration/BSI_V35_PROMPT_PACKAGE_INTEGRITY.json"
 
 AUTHORITATIVE_REFERENCES = {
     "architectural_invariants": "ARCHITECTURAL_INVARIANTS_BSI_v3.5.md",
@@ -32,25 +34,56 @@ class PromptPackageError(RuntimeError):
     """Raised when a required prompt or reference is missing or unreadable."""
 
 
-def _read_verified(relative_path: str) -> dict[str, str]:
+def _load_integrity_manifest() -> dict[str, str]:
+    path = (REPOSITORY_ROOT / INTEGRITY_MANIFEST_PATH).resolve()
+    if REPOSITORY_ROOT not in path.parents or not path.is_file():
+        raise PromptPackageError("Canonical prompt integrity manifest is missing.")
+    try:
+        manifest = json.loads(path.read_text(encoding="utf-8"))
+        if manifest.get("schema") != "bsi-v35-content-integrity/v1":
+            raise ValueError("Unsupported integrity manifest schema.")
+        if manifest.get("framework_version") != PROMPT_VERSION:
+            raise ValueError("Integrity manifest framework version does not match the prompt registry.")
+        files = manifest.get("files")
+        if not isinstance(files, dict) or not files:
+            raise ValueError("Integrity manifest has no file hashes.")
+        return files
+    except (OSError, UnicodeError, json.JSONDecodeError, ValueError) as exc:
+        raise PromptPackageError(f"Cannot load canonical integrity manifest: {exc}") from exc
+
+
+def _read_verified(relative_path: str, expected_hashes: dict[str, str]) -> dict[str, str]:
     path = (REPOSITORY_ROOT / relative_path).resolve()
     if REPOSITORY_ROOT not in path.parents:
         raise PromptPackageError(f"Reference escapes repository root: {relative_path}")
     if not path.is_file():
         raise PromptPackageError(f"Required BSI v3.5 file is missing: {relative_path}")
     try:
-        content = path.read_text(encoding="utf-8")
+        encoded = path.read_bytes()
+        content = encoded.decode("utf-8")
     except (OSError, UnicodeError) as exc:
         raise PromptPackageError(f"Cannot read required file {relative_path}: {exc}") from exc
-    digest = hashlib.sha256(content.encode("utf-8")).hexdigest()
-    return {"path": relative_path, "sha256": digest, "content": content}
+    digest = hashlib.sha256(encoded).hexdigest()
+    expected_git_blob = expected_hashes.get(relative_path)
+    actual_git_blob = hashlib.sha1(
+        f"blob {len(encoded)}\0".encode("ascii") + encoded
+    ).hexdigest()
+    if expected_git_blob is None:
+        raise PromptPackageError(f"No pinned integrity hash for required file: {relative_path}")
+    if actual_git_blob != expected_git_blob:
+        raise PromptPackageError(
+            f"Canonical prompt integrity mismatch for {relative_path}: "
+            f"expected {expected_git_blob}, got {actual_git_blob}"
+        )
+    return {"path": relative_path, "sha256": digest, "git_blob_sha1": actual_git_blob, "content": content}
 
 
 def load_bsi_v35_package() -> dict[str, Any]:
     """Return a complete, version-pinned prompt package for a downstream generator."""
-    prompt = _read_verified(PROMPT_PATH)
+    expected_hashes = _load_integrity_manifest()
+    prompt = _read_verified(PROMPT_PATH, expected_hashes)
     references = {
-        key: _read_verified(path)
+        key: _read_verified(path, expected_hashes)
         for key, path in AUTHORITATIVE_REFERENCES.items()
     }
     return {

@@ -1,8 +1,8 @@
 # BSI 3.5 — Architectural Invariants
 
-**Status:** Development Architecture
-**Baseline:** BSI v3.4.2
-**Branch:** `develop/v3.5`
+**Status:** Canonical v3.5 Architectural Invariants
+**Baseline:** BSI v3.5
+**Branch:** `release/bsi-v3.5`
 
 ---
 

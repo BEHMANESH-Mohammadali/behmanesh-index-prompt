@@ -10,6 +10,7 @@ def test_canonical_prompt_package_is_complete_and_version_pinned():
     assert package["prompt_version"] == "3.5"
     assert package["master_prompt"]["path"] == "MASTER_PROMPT_BSI_v3.5.md"
     assert package["master_prompt"]["sha256"]
+    assert package["master_prompt"]["git_blob_sha1"]
     assert set(package["authoritative_references"]) == set(AUTHORITATIVE_REFERENCES)
     assert all(item["sha256"] and item["content"] for item in package["authoritative_references"].values())
 
@@ -30,3 +31,11 @@ def test_master_prompt_is_standalone_and_prompt_first():
     assert "Embedded source: BIO v1.0" in prompt
     assert "EIG_penalty = EIG_avg / 20" in prompt
     assert "EIG_penalty = EIG_avg / 10" not in prompt
+
+
+
+def test_prompt_package_is_pinned_to_expected_git_blob_hashes():
+    package = load_bsi_v35_package()
+    assert package["master_prompt"]["git_blob_sha1"]
+    for item in package["authoritative_references"].values():
+        assert item["git_blob_sha1"]

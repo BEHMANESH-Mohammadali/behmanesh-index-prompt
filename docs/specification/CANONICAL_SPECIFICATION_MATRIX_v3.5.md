@@ -1,6 +1,6 @@
 # Canonical Specification Matrix — BSI v3.5
 
-**Status:** Working Canonicalization Specification  
+**Status:** Canonical decision matrix — unresolved items remain explicitly non-operative  
 **Purpose:** Resolve authoritative semantics before implementation changes  
 **Scope:** BSI v3.5 analytical architecture only
 

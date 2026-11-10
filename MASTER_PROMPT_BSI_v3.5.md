@@ -1,9 +1,9 @@
 # Behmanesh Structural Index — Master Prompt BSI v3.5
 
 **Version:** 3.5  
-**Baseline:** BSI v3.4.2  
+**Baseline:** BSI v3.5  
 **Execution Architecture:** BSI 3.5 — Execution Architecture  
-**Status:** Development Release  
+**Status:** Canonical prompt for the v3.5 release branch  
 **Author:** Mohammadali Behmanesh (@behmanesham)
 
 ---
@@ -1369,7 +1369,7 @@ The following snapshots are embedded from the repository branch used to prepare 
 
 BSI 3.5 — Execution Architecture
 
-Status: Final Baseline: BSI v3.4.2 Branch: develop/v3.5 Role: Execution Control Layer Protected Boundary: BSI Knowledge Core
+Status: Canonical v3.5 Execution Architecture Baseline: BSI v3.5 Branch: release/bsi-v3.5 Role: Execution Control Layer Protected Boundary: BSI Knowledge Core
 
 1. Purpose
 
@@ -2576,9 +2576,9 @@ BSI 3.5 must not redesign BSI; it must redesign the conditions under which BSI i
 
 # BSI 3.5 — Architectural Invariants
 
-**Status:** Development Architecture
-**Baseline:** BSI v3.4.2
-**Branch:** `develop/v3.5`
+**Status:** Canonical v3.5 Architectural Invariants
+**Baseline:** BSI v3.5
+**Branch:** `release/bsi-v3.5`
 
 ---
 
@@ -3428,7 +3428,7 @@ Legacy v3.4.2 output structures are not automatically inherited as Layer C v3.5 
 
 # Canonical Specification Matrix — BSI v3.5
 
-**Status:** Working Canonicalization Specification  
+**Status:** Canonical decision matrix — unresolved items remain explicitly non-operative  
 **Purpose:** Resolve authoritative semantics before implementation changes  
 **Scope:** BSI v3.5 analytical architecture only
 

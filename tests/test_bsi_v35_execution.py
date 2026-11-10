@@ -149,3 +149,62 @@ def test_execution_status_requires_explicit_true_pass_and_readiness():
         "final_reread": {"passed": True, "ready_for_final": True}
     })
     assert accepted.output["ready_for_completion"] is True
+
+
+def test_full_orchestration_forwards_explicit_evidence_backed_d2_si(monkeypatch):
+    from core.model_adapters import StaticModelRouter
+    from core.bsi_v35_execution import execute_bsi_v35
+
+    monkeypatch.setattr(
+        "core.bsi_v35_execution.evaluate_claim_with_rag",
+        lambda claim: {
+            "enabled": True, "retrieved_sources": 1, "external_support": 0.4,
+            "external_conflict": 0.0, "external_coverage": 0.3,
+            "external_status": "underdetermined",
+        },
+    )
+    router = StaticModelRouter({"analyst": _FakeAdapter(), "auditor": _FakeAdapter()})
+    result = execute_bsi_v35({
+        "text": "A sufficiently long fixture text containing a claim for structural analysis.",
+        "model_router": router,
+        "source_materials": [{"source_ref": "fixture:source-1", "text": "Inspected source text for a fixture claim."}],
+        "dimension_scores": {"D1": 75, "D2": 75, "D3": 75, "D4": 75, "D5": 75, "D6": 75, "D7": 75},
+        "dimension_score_evidence": {f"D{i}": ["fixture:source-1"] for i in range(1, 8)},
+        "d2_si_scores": {"I": 3, "D": 3, "C": 3, "R": 3},
+        "d2_si_score_evidence": {k: ["fixture:source-1"] for k in ("I", "D", "C", "R")},
+        "calculation_mode": "linear",
+        "content_scope": "single_content",
+    })
+    assert result["status"] == "COMPLETED_WITH_EXPLICIT_ASSESSMENTS"
+    assert result["scoring"]["D2_assessment_basis"] == "internal_coherence_only"
+    assert result["scoring"]["D2-SI"]["status"] == "CALCULATED"
+    assert result["scoring"]["D2-SI"]["D2-SI"] == pytest.approx(3.0)
+    assert result["scoring"]["BSI"]["dimension_scores"]["D2"] == pytest.approx(75)
+
+
+def test_execution_blocks_d2_si_without_dimension_specific_evidence(monkeypatch):
+    from core.model_adapters import StaticModelRouter
+    from core.bsi_v35_execution import execute_bsi_v35
+
+    monkeypatch.setattr(
+        "core.bsi_v35_execution.evaluate_claim_with_rag",
+        lambda claim: {
+            "enabled": True, "retrieved_sources": 1, "external_support": 0.4,
+            "external_conflict": 0.0, "external_coverage": 0.3,
+            "external_status": "underdetermined",
+        },
+    )
+    router = StaticModelRouter({"analyst": _FakeAdapter(), "auditor": _FakeAdapter()})
+    result = execute_bsi_v35({
+        "text": "A sufficiently long fixture text containing a claim for structural analysis.",
+        "model_router": router,
+        "source_materials": [{"source_ref": "fixture:source-1", "text": "Inspected source text for a fixture claim."}],
+        "dimension_scores": {f"D{i}": 75 for i in range(1, 8)},
+        "dimension_score_evidence": {f"D{i}": ["fixture:source-1"] for i in range(1, 8)},
+        "d2_si_scores": {"I": 3, "D": 3, "C": 3, "R": 3},
+        "calculation_mode": "linear",
+        "content_scope": "single_content",
+    })
+    assert result["status"] == "ANALYSIS_COMPLETE_SCORING_BLOCKED"
+    assert result["scoring"] is None
+    assert result["completion"]["authorized"] is False
