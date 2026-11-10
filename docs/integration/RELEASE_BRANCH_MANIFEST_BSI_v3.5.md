@@ -49,3 +49,8 @@ The `main` branch advanced by one commit after the release candidate was assembl
 Maintenance PR #10 was merged after its pull-request CI passed. The `execution_status` handler now requires the final-reread result to contain literal boolean `passed=true` and literal boolean `ready_for_final=true`. Missing readiness, false readiness, and non-boolean pass values block completion. Regression tests cover these cases and the valid path.
 
 Post-merge CI on release commit `cfc64fe5ed7875d1dcfc54731ade928ee6a853b6` passed (workflow runs #146 push and #147 pull_request), including Python compilation and the full pytest suite. This remains repository-level automated validation, not independent Prompt-Only portability acceptance or third-party review.
+
+
+## Addendum — Assumption Excavation protocol integration (2026-11-10)
+
+PR #15 proposes the complete Assumption Excavation Protocol v1.1 integration. The full normative source is embedded in `MASTER_PROMPT_BSI_v3.5.md`, separately loaded by `core/prompt_registry.py`, and pinned in `docs/integration/BSI_V35_PROMPT_PACKAGE_INTEGRITY.json`. The optional runtime now treats lexical candidates as leads and blocks completion when the four-step output schema is incomplete. PR CI run #166 passed Python compilation and the full test suite (78 passed, 0 failed; 3 non-blocking deprecation warnings). This evidence is limited to repository CI; independent Prompt-Only portability and inter-rater reliability are not claimed. PR #15 remains unmerged; release branch, tags, and release status are unchanged.
