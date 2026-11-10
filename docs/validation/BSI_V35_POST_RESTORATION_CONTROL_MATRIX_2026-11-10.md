@@ -121,3 +121,12 @@ The tested commit includes the guarded D2-SI forwarding implementation and two n
 - PR CI run #166 (`42739215522`) passed: Python compilation succeeded and pytest reported 78 passed, 0 failed; 3 non-blocking deprecation warnings.
 - This is repository-level implementation/test evidence only. It does not establish independent Prompt-Only portability, inter-rater reliability, or semantic completeness beyond the protocol's stated limits.
 - PR #15 is open and not merged. The protected `release/bsi-v3.5` branch remains unchanged; no tag or release was created.
+
+
+## Addendum — Final Compliance boundary clarification (2026-11-10)
+
+- The Master Prompt retains the official SOP v3.4.2 + BIO v1.0 compliance statement.
+- A new normative note clarifies that SOP v3.4.2 remains methodological lineage, while the v3.5 Layer C contract controls the final presentation sequence; legacy v3.4.2 JSON output structures are not automatically inherited.
+- The note explicitly prohibits using the template to imply source verification, software execution, independent validation, or durable trace persistence unless actually performed.
+- This is a prompt-text change on the readiness-audit branch only. It has not been merged into `release/bsi-v3.5`, and no tag/release has been created.
+- CI, package-integrity hashes, and the independent Prompt-Only acceptance test must be rerun against the exact final candidate before release readiness can be claimed.
