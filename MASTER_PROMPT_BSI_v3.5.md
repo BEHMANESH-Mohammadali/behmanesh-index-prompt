@@ -1196,6 +1196,18 @@ The final analysis must preserve the official BSI compliance statement:
 
 Do not replace this official compliance statement with a claim that execution architecture compliance supersedes Knowledge-Core compliance.
 
+### v3.5 compatibility interpretation (normative)
+
+The quoted statement preserves the canonical analytical-method and ontology references; it does not make the v3.4.2 presentation schema controlling over BSI v3.5. Read it together with the v3.5-specific execution architecture and the canonical Layer C contract:
+
+- The SOP v3.4.2 pipeline remains methodological lineage for the analytical sequence and its substantive functions.
+- The BSI v3.5 Layer C contract governs the final presentation sequence. Its explicit rule that EIG, ECC, and REIG effects are integrated into substantive findings, rather than emitted as standalone procedural reports, is not a violation of the quoted compliance statement.
+- Legacy v3.4.2 JSON output structures are not automatically inherited as the v3.5 Layer C schema.
+- The statement does not authorize changes to BIO v1.0, its official criteria or weights, and does not imply that external sources were verified, software was executed, independent validation occurred, or execution traces were durably persisted unless each such action actually occurred.
+- Preserve the official wording as the canonical compliance template. Where a particular analysis materially fails to meet an applicable SOP/BIO requirement, disclose the deviation and do not present the template as evidence that the unmet requirement was in fact satisfied.
+
+This interpretation reconciles the retained SOP/BIO compliance statement with the v3.5 output contract without deleting the historical statement or silently treating the two output schemas as identical.
+
 ---
 
 ## 17. Final Instruction

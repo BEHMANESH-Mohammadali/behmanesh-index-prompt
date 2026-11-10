@@ -54,3 +54,12 @@ Post-merge CI on release commit `cfc64fe5ed7875d1dcfc54731ade928ee6a853b6` passe
 ## Addendum — Assumption Excavation protocol integration (2026-11-10)
 
 PR #15 proposes the complete Assumption Excavation Protocol v1.1 integration. The full normative source is embedded in `MASTER_PROMPT_BSI_v3.5.md`, separately loaded by `core/prompt_registry.py`, and pinned in `docs/integration/BSI_V35_PROMPT_PACKAGE_INTEGRITY.json`. The optional runtime now treats lexical candidates as leads and blocks completion when the four-step output schema is incomplete. PR CI run #166 passed Python compilation and the full test suite (78 passed, 0 failed; 3 non-blocking deprecation warnings). This evidence is limited to repository CI; independent Prompt-Only portability and inter-rater reliability are not claimed. PR #15 remains unmerged; release branch, tags, and release status are unchanged.
+
+
+## Addendum — Final Compliance boundary clarification (2026-11-10)
+
+- The Master Prompt retains the official SOP v3.4.2 + BIO v1.0 compliance statement.
+- A new normative note clarifies that SOP v3.4.2 remains methodological lineage, while the v3.5 Layer C contract controls the final presentation sequence; legacy v3.4.2 JSON output structures are not automatically inherited.
+- The note explicitly prohibits using the template to imply source verification, software execution, independent validation, or durable trace persistence unless actually performed.
+- This is a prompt-text change on the readiness-audit branch only. It has not been merged into `release/bsi-v3.5`, and no tag/release has been created.
+- CI, package-integrity hashes, and the independent Prompt-Only acceptance test must be rerun against the exact final candidate before release readiness can be claimed.

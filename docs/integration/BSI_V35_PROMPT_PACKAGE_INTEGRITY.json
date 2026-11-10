@@ -4,7 +4,7 @@
   "branch_baseline": "release/bsi-v3.5",
   "note": "Expected Git blob SHA-1 values for canonical prompt package files. This manifest intentionally does not hash itself.",
   "files": {
-    "MASTER_PROMPT_BSI_v3.5.md": "41fcf48c88b3ba7a008c4fca3460f3d5800b9e80",
+    "MASTER_PROMPT_BSI_v3.5.md": "bcb5a8e57a64827800e1313a1f8ae4abfaafaf43",
     "docs/specification/CANONICAL_SPECIFICATION_MATRIX_v3.5.md": "08c25a9a85d335d0789fe57b75974469b7e086ff",
     "BSI_Calculation_Formula_Hybrid_v3x.md": "859c6cf66704f59b01dd7a40ccd275f5cd6c4cff",
     "core/bsi_scoring_v35.py": "fed23856b0aeae210180d2caf29199bbeea5bd1a",
