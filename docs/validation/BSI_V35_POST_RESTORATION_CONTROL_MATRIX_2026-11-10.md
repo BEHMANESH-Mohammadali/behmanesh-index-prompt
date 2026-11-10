@@ -2,8 +2,8 @@
 
 **Review date:** 2026-11-10  
 **Reviewed branch:** `work/bsi-v3.5-minimal-audit-fixes`  
-**Reviewed tree after guarded-execution integration:** `c3879ee042837eff6f933421ecb8411cd02370f2`  
-**Automated test commit:** `c3879ee042837eff6f933421ecb8411cd02370f2`  
+**Reviewed branch head before this documentation correction:** `4ddefab0ac9f47692614ba5b211afd686be2a3ce`  
+**Automated test commit:** `4ddefab0ac9f47692614ba5b211afd686be2a3ce`  
 **Scope:** Canonical BSI v3.5 prompt package, scoring/runtime, execution lifecycle, documentation consistency, package integrity, and repository test evidence.
 
 This is a control review, not a claim that every file in the repository was read line by line, that the framework has independent empirical validation, or that a successful test suite proves the truth or quality of supplied assessments.
@@ -69,8 +69,10 @@ This is a control review, not a claim that every file in the repository was read
 
 ## F. Actual automated validation
 
-**GitHub Actions run:** [Run #158 — BSI v3.5 validation](https://github.com/BEHMANESH-Mohammadali/behmanesh-index-prompt/actions/runs/42711754847)  
-**Tested commit:** `c3879ee042837eff6f933421ecb8411cd02370f2`  
+**GitHub Actions run:** [Run 42734386703 — BSI v3.5 validation](https://github.com/BEHMANESH-Mohammadali/behmanesh-index-prompt/actions/runs/42734386703)  
+**Job:** `prompt-package-tests` — completed successfully  
+**Tested branch:** `work/bsi-v3.5-minimal-audit-fixes`  
+**Tested commit:** `4ddefab0ac9f47692614ba5b211afd686be2a3ce`  
 **Python:** 3.12.16
 
 | Validation step | Actual result |
@@ -87,7 +89,7 @@ Warnings recorded:
 
 These warnings did not fail the run. They are maintenance notices, not evidence of a BSI scoring failure, and no unrelated changes were made to address them.
 
-The tested commit includes the guarded D2-SI forwarding implementation and two new execution-path regression tests: one confirms successful forwarding and deterministic normalization; the other confirms that missing dimension-specific D2-SI evidence blocks scoring. After that run, only this control-matrix document and restoration of the workflow's original branch filters were changed; no Python source or test file changed.
+The tested commit includes the guarded D2-SI forwarding implementation and two new execution-path regression tests: one confirms successful forwarding and deterministic normalization; the other confirms that missing dimension-specific D2-SI evidence blocks scoring. This matrix correction is a documentation-only commit made after the successful run; no Python source or test file changed after the tested commit. The workflow's temporary branch-filter change had already been restored before this review.
 
 ## G. Validation not established by this run
 
@@ -102,11 +104,11 @@ The tested commit includes the guarded D2-SI forwarding implementation and two n
 
 ## Overall disposition
 
-- **Automated repository validation:** PASS (73/73 tests; Python compilation passed).
+- **Automated repository validation:** PASS (75/75 tests; Python compilation passed).
 - **Canonical package integrity:** PASS (15/15 pinned files matched).
 - **Release branch protection by separation:** PASS (release head unchanged).
 - **D2-SI numerical calculation in deterministic runtime:** PASS.
 - **D2-SI single-content governance wording:** PASS; 31 October definition remains authoritative, later explanation is additive.
 - **D2-SI through guarded `/bsi/execute`:** PASS for explicitly supplied, evidence-backed payloads (C-12).
 
-**No release promotion is authorized by this report.** The guarded execution path is validated for explicitly supplied, evidence-backed D2-SI payloads. Before merging, retain the release/backup separation and review the 42-commit branch diff as a whole; this report does not authorize merge, tag, or release. Do not alter official weights or the BIO v1.0 definition.
+**No release promotion is authorized by this report.** The guarded execution path is validated for explicitly supplied, evidence-backed D2-SI payloads. Before merging, retain the release/backup separation and review the 43-commit branch diff as a whole (14 changed files in the current comparison); this report does not authorize merge, tag, or release. Do not alter official weights or the BIO v1.0 definition.
