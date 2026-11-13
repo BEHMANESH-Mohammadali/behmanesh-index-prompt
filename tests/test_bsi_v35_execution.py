@@ -74,8 +74,15 @@ class _FakeAdapter:
             output = {"core_claim": "Fixture claim", "manifest_layer": [], "latent_layer": [], "meta_layer": [], "mechanisms": [], "feedback_loops": [], "leverage_points": [], "claim_evidence_inference_graph": [], "uncertainty": "fixture", "limitations": []}
         elif "audit each material claim" in instruction:
             output = {"verified_claims": [], "unverified_claims": ["Fixture claim"], "contradictions": [], "verification_state": "SOURCE_TEXT_REVIEWED_MODEL_ASSISTED", "unresolved_gaps": []}
-        elif "excavate explicit and implicit assumptions" in instruction:
-            output = {"assumptions": [], "counterfactual_tests": [], "author_stated": [], "analyst_inferred": [], "uncertainty": "fixture"}
+        elif "execute the complete canonical assumption excavation protocol" in instruction:
+            output = {
+                "conditional_formulations": [{"claim": "Fixture claim", "if_x": "X", "then_y": "Y"}],
+                "category_review": {name: {"status": "NONE_IDENTIFIED", "rationale": "No relevant assumption in fixture."}
+                                    for name in ("methodological", "modeling", "generalizability", "value")},
+                "assumptions": [], "counterfactual_tests": [],
+                "synthesis": "All four categories were examined; no assumptions were identified in this fixture.",
+                "limitations": ["Fixture-only output."],
+            }
         elif "assess eig components" in instruction:
             output = {"raw_gaps": {"MCG": 2, "CEG": 3, "FCG": 2, "LCG": 4}, "lcg_interpretation": "Unknown", "evidence_for_each_gap": {"MCG": ["fixture"], "CEG": ["fixture"], "FCG": ["fixture"], "LCG": ["fixture"]}, "missing_evidence": [], "ready_for_scoring": True}
         elif "calibrate the confidence" in instruction:
@@ -208,3 +215,42 @@ def test_execution_blocks_d2_si_without_dimension_specific_evidence(monkeypatch)
     assert result["status"] == "ANALYSIS_COMPLETE_SCORING_BLOCKED"
     assert result["scoring"] is None
     assert result["completion"]["authorized"] is False
+
+
+def test_assumption_excavation_blocks_missing_category_coverage():
+    from core.bsi_v35_execution import assumption_excavation
+    from core.model_adapters import StaticModelRouter
+    class Adapter:
+        def generate(self, request):
+            from core.model_contracts import ModelResponse
+            import json
+            return ModelResponse(content=json.dumps({
+                "conditional_formulations": [{"claim": "Claim", "if_x": "X", "then_y": "Y"}],
+                "category_review": {"methodological": {"status": "NONE_IDENTIFIED", "rationale": "none"}},
+                "assumptions": [], "counterfactual_tests": [], "synthesis": "incomplete", "limitations": [],
+            }), provider="test", model="fixture")
+    result = assumption_excavation({"task": {"text": "Sufficient fixture text for this protocol test.", "model_router": StaticModelRouter({"analyst": Adapter()})},
+                                    "structural_analysis": {"core_claim": "Claim"},
+                                    "task_intake": {"candidate_artifacts": {"assumptions": []}}})
+    assert result.output["blocked"] is True
+    assert any("modeling" in error for error in result.output["schema_errors"])
+
+
+def test_assumption_excavation_accepts_explicit_no_findings_for_all_categories():
+    from core.bsi_v35_execution import assumption_excavation
+    from core.model_adapters import StaticModelRouter
+    class Adapter:
+        def generate(self, request):
+            from core.model_contracts import ModelResponse
+            import json
+            return ModelResponse(content=json.dumps({
+                "conditional_formulations": [{"claim": "Claim", "if_x": "X", "then_y": "Y"}],
+                "category_review": {name: {"status": "NONE_IDENTIFIED", "rationale": "Reviewed; none identified."}
+                                    for name in ("methodological", "modeling", "generalizability", "value")},
+                "assumptions": [], "counterfactual_tests": [],
+                "synthesis": "All categories reviewed; no assumptions identified in this bounded fixture.", "limitations": [],
+            }), provider="test", model="fixture")
+    result = assumption_excavation({"task": {"text": "Sufficient fixture text for this protocol test.", "model_router": StaticModelRouter({"analyst": Adapter()})},
+                                    "structural_analysis": {"core_claim": "Claim"},
+                                    "task_intake": {"candidate_artifacts": {"assumptions": []}}})
+    assert result.output.get("blocked") is not True

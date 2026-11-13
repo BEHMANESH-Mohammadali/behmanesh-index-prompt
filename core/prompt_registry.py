@@ -27,6 +27,7 @@ AUTHORITATIVE_REFERENCES = {
     "ecc": "CORE-BEHMANESH/Shared_Components/EIG/Epistemic_Confidence_Calibration_v2.0.md",
     "reig": "CORE-BEHMANESH/Shared_Components/EIG/Recursive_EIG_v1.0.md",
     "calculation_formula": "BSI_Calculation_Formula_Hybrid_v3x.md",
+    "assumption_excavation_protocol": "CORE-BEHMANESH/Shared_Components/Assumption_Excavation_Protocol_v1.1.md",
 }
 
 

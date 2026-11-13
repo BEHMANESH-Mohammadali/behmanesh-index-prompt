@@ -252,6 +252,61 @@ def verification(context: Mapping[str, Any]) -> StageResult:
     return audited
 
 
+ASSUMPTION_CATEGORIES = (
+    "methodological", "modeling", "generalizability", "value",
+)
+
+
+def _assumption_excavation_schema_errors(output: Mapping[str, Any]) -> list[str]:
+    """Require observable coverage of the canonical four-step protocol."""
+    errors: list[str] = []
+    if not isinstance(output.get("conditional_formulations"), list) or not output["conditional_formulations"]:
+        errors.append("conditional_formulations must be a non-empty list.")
+    categories = output.get("category_review")
+    if not isinstance(categories, Mapping):
+        errors.append("category_review must cover all four canonical categories.")
+    else:
+        for category in ASSUMPTION_CATEGORIES:
+            item = categories.get(category)
+            if not isinstance(item, Mapping):
+                errors.append(f"category_review.{category} is missing.")
+                continue
+            if item.get("status") not in {"FINDINGS", "NONE_IDENTIFIED", "NOT_APPLICABLE"}:
+                errors.append(f"category_review.{category}.status is invalid.")
+            if item.get("status") == "NONE_IDENTIFIED" and not str(item.get("rationale", "")).strip():
+                errors.append(f"category_review.{category} requires a no-finding rationale.")
+    assumptions = output.get("assumptions")
+    if not isinstance(assumptions, list):
+        errors.append("assumptions must be a list.")
+    else:
+        for index, item in enumerate(assumptions):
+            if not isinstance(item, Mapping):
+                errors.append(f"assumptions[{index}] must be an object.")
+                continue
+            for field in ("category", "assumption", "rank", "evidence_label", "counterfactual_effect", "core_claim_link"):
+                if not str(item.get(field, "")).strip():
+                    errors.append(f"assumptions[{index}].{field} is required.")
+            if item.get("category") not in ASSUMPTION_CATEGORIES:
+                errors.append(f"assumptions[{index}].category is invalid.")
+            if item.get("rank") not in {"foundational", "supporting", "secondary"}:
+                errors.append(f"assumptions[{index}].rank is invalid.")
+            if item.get("evidence_label") not in {"FACT", "INFERENCE"}:
+                errors.append(f"assumptions[{index}].evidence_label must be FACT or INFERENCE.")
+            if item.get("rank") == "foundational" and not str(item.get("author_awareness", "")).strip():
+                errors.append(f"assumptions[{index}] foundational item requires author_awareness.")
+    tests = output.get("counterfactual_tests")
+    if not isinstance(tests, list) or any(
+        not isinstance(item, Mapping) or not str(item.get("assumption", "")).strip()
+        or not str(item.get("effect_if_false", "")).strip() for item in tests
+    ):
+        errors.append("counterfactual_tests must be a list of complete tests (or an explicit empty list).")
+    if not str(output.get("synthesis", "")).strip():
+        errors.append("synthesis is required.")
+    if not isinstance(output.get("limitations"), list):
+        errors.append("limitations must be a list.")
+    return errors
+
+
 def assumption_excavation(context: Mapping[str, Any]) -> StageResult:
     text = _text(context)
     analysis = context.get("structural_analysis", {})
@@ -260,10 +315,33 @@ def assumption_excavation(context: Mapping[str, Any]) -> StageResult:
     assumptions = candidates.get("assumptions")
     if assumptions is None:
         assumptions = excavate_assumptions(text)
-    return _call_model(context, "analyst",
-        "Excavate explicit and implicit assumptions, rank only by their role in the argument (not invented numeric weights), provide counterfactual tests, and distinguish author-stated assumptions from analyst-inferred assumptions. Return JSON with assumptions, counterfactual_tests, author_stated, analyst_inferred, uncertainty.",
-        {"target_text": text, "draft_analysis": analysis,
-         "legacy_heuristic_candidates": assumptions})
+    protocol = load_bsi_v35_package()["authoritative_references"]["assumption_excavation_protocol"]["content"]
+    result = _call_model(
+        context, "analyst",
+        "Execute the complete canonical Assumption Excavation Protocol v1.1 in canonical_protocol. "
+        "Legacy heuristic candidates are leads only, never findings or completion. Step 1: formulate each key claim "
+        "as If X, then Y, or state why it cannot be conditionally formulated. Step 2: explicitly review all four "
+        "categories: methodological, modeling, generalizability, value; include NONE_IDENTIFIED with rationale "
+        "where applicable. Step 3: counterfactually test every identified assumption, classify impact as foundational, "
+        "supporting, or secondary, and assess author awareness only from textual evidence; absence of explanation is "
+        "not proof of unawareness. Step 4: synthesize the pattern and connect every foundational assumption to Core Claim. "
+        "Label direct textual support FACT and analyst inference INFERENCE; do not infer intent or invent numeric weights. "
+        "Return conditional_formulations, category_review, assumptions, counterfactual_tests, synthesis, limitations. "
+        "Each assumption requires category, assumption, rank, evidence_label, counterfactual_effect, core_claim_link; "
+        "foundational items also require author_awareness.",
+        {"target_text": text, "draft_analysis": analysis, "canonical_protocol": protocol,
+         "legacy_heuristic_candidates": assumptions},
+    )
+    if not isinstance(result.output, Mapping) or result.output.get("blocked"):
+        return result
+    errors = _assumption_excavation_schema_errors(result.output)
+    if errors:
+        return StageResult(
+            output={"blocked": True, "block_reason": "Assumption Excavation four-step protocol output is incomplete.",
+                    "schema_errors": errors, "partial_output": dict(result.output)},
+            limitation="The output did not demonstrate all four steps and category coverage; completion is blocked.",
+        )
+    return result
 
 
 def eig(context: Mapping[str, Any]) -> StageResult:

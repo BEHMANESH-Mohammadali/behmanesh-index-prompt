@@ -4,7 +4,7 @@
   "branch_baseline": "release/bsi-v3.5",
   "note": "Expected Git blob SHA-1 values for canonical prompt package files. This manifest intentionally does not hash itself.",
   "files": {
-    "MASTER_PROMPT_BSI_v3.5.md": "2d306cbd61eecb0c5449f170ab6d35f8c88fd499",
+    "MASTER_PROMPT_BSI_v3.5.md": "bcb5a8e57a64827800e1313a1f8ae4abfaafaf43",
     "docs/specification/CANONICAL_SPECIFICATION_MATRIX_v3.5.md": "08c25a9a85d335d0789fe57b75974469b7e086ff",
     "BSI_Calculation_Formula_Hybrid_v3x.md": "859c6cf66704f59b01dd7a40ccd275f5cd6c4cff",
     "core/bsi_scoring_v35.py": "fed23856b0aeae210180d2caf29199bbeea5bd1a",
@@ -18,6 +18,7 @@
     "SOP_Intellectual_Content_Analysis_v3.4.2.md": "cf14b3429cd2ddcd4bc002dfc47396c186d4f021",
     "CORE-BEHMANESH/Shared_Components/EIG/Epistemic_Integrity_Gap_Analyzer_v1.0.md": "e2db2b4520de680f50ef68b97f555806fcb05cb4",
     "CORE-BEHMANESH/Shared_Components/EIG/Epistemic_Confidence_Calibration_v2.0.md": "a6daab3f3d1ae874e503c4e48e395c690f686dc8",
-    "CORE-BEHMANESH/Shared_Components/EIG/Recursive_EIG_v1.0.md": "8aa810994bb4dba758d44130a1496220e15917e8"
+    "CORE-BEHMANESH/Shared_Components/EIG/Recursive_EIG_v1.0.md": "8aa810994bb4dba758d44130a1496220e15917e8",
+    "CORE-BEHMANESH/Shared_Components/Assumption_Excavation_Protocol_v1.1.md": "c387df5c6b22f735f9c9340eaa96ad1f71028a1d"
   }
 }

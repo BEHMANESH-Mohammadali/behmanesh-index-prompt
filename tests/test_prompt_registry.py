@@ -39,3 +39,16 @@ def test_prompt_package_is_pinned_to_expected_git_blob_hashes():
     assert package["master_prompt"]["git_blob_sha1"]
     for item in package["authoritative_references"].values():
         assert item["git_blob_sha1"]
+
+
+def test_assumption_excavation_protocol_is_embedded_and_version_pinned():
+    package = load_bsi_v35_package()
+    prompt = package["master_prompt"]["content"]
+    protocol = package["authoritative_references"]["assumption_excavation_protocol"]["content"]
+    assert "Embedded normative source: Assumption Excavation Protocol v1.1" in prompt
+    assert "گام ۱ — تبدیل ادعا به فرمت شرطی" in prompt
+    assert "گام ۲ — کاوش سیستماتیک پیش‌فرض‌ها" in prompt
+    assert "گام ۳ — تست نقض (Counterfactual Test)" in prompt
+    assert "گام ۴ — رتبه‌بندی و سنتز" in prompt
+    assert "Manifest Bias" in protocol
+    assert "غیاب توضیح لزوماً غیاب آگاهی نیست" in protocol
